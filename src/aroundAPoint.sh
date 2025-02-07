@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 strings=(
-  aroundAPoint
   gravityModule
+  aroundAPoint
 )
 
 FILES=""
