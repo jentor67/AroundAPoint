@@ -1,59 +1,40 @@
 !> \\file gravityModule.f95
 module gravityModule
   implicit none
-  private
-  public :: typeTest1, printTest1, acceleration
+  public :: typeTest1, printTest1, acceleration, distance
 
-  real :: m, G = 6.674083E-11
+  real :: mass 
+  real :: gcu = 6.674083E-11
+  real :: pie = 3.1415926535897932384626
+  real :: mass_earth = 5.972168E24 
+  real :: radius_earth = 6371000
 
   type typeTest1
     integer :: xValue
+    integer :: yValue
   end type typeTest1
 
 contains
+
   subroutine printTest1(at)
     type(typeTest1) at
 
-    write(*,*) at%xValue
+    write(*,*) 'Before ',at%xValue
     at%xValue = 3
-    write(*,*) at%xValue
+    write(*,*) 'After ',at%xValue
   end subroutine printTest1
 
-  function acceleration(m,r) result(a) 
-    real :: a, m, r
+  function acceleration(m,r) result(grav) 
+    real :: grav, m, r
 
-    a = G*m/(r**2)
+    grav = gcu*m/(r**2)
+  end function 
+
+  function distance(x1,y1,z1,x2,y2,z2) result(r) 
+    real :: x1, y1, z1, x2, y2, z2, r 
+
+    r = ( (x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2 )**.5
   end function 
 
 end module gravityModule
-
-module testModule
-  implicit none
-  private
-  public :: typeTest1, printTest1, acceleration
-
-  real :: m, G = 6.674083E-11
-
-  type typeTest1
-    integer :: xValue
-  end type typeTest1
-
-contains
-  subroutine printTest1(at)
-    type(typeTest1) at
-
-    write(*,*) at%xValue
-    at%xValue = 3
-    write(*,*) at%xValue
-  end subroutine printTest1
-
-  function acceleration(m,r) result(a) 
-    real :: a, m, r
-
-    a = G*m/(r**2)
-  end function 
-
-end module testModule
-
-       
 

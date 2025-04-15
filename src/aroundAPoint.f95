@@ -1,27 +1,30 @@
 !> \\file aroundAPoint.f
 Program aroundAPoint
    use gravityModule 
-   use testModule 
    implicit none
 
-   real :: me = 5.972168E24, re = 6371000
-   real :: F, g, Gc = 6.674083E-11, pi=3.1415926535897932384626
+   real :: force, gravity 
    type(typeTest1) :: a 
 
-   write(*,*) "Value of pi =",pi
+   write(*,*) "Value of pi =",pie
     
-   g = Gc*me/(re**2)
+   gravity = acceleration(mass_earth,radius_earth)
       
-   write(*,*) "Gravity at earth surface is ", g
+   write(*,*) "Gravity at earth surface is ", gravity
 
 
-   a%xValue = 2
+   a%xValue = 24
+   a%yValue = 36
 
    write(*,*) a%xValue
+   write(*,*) a%yValue
 
    call printTest1(a)
 
    write(*,*) a%xValue
 
-   write(*,*) acceleration(me,re)
+   write(*,*) acceleration(mass_earth,radius_earth)
+
+   write(*,*) distance(2.0,2.3,4.0,4.8,5.0,2.0)
+
 End Program aroundAPoint
