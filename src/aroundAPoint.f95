@@ -3,28 +3,20 @@ Program aroundAPoint
    use gravityModule 
    implicit none
 
-   real :: force, gravity 
+   real :: force, gravity, distance1 
    type(typeTest1) :: a 
-
-   write(*,*) "Value of pi =",pie
-    
-   gravity = acceleration(mass_earth,radius_earth)
+   type(particle) :: sun
+   type(particle) :: earth
+   type(particle) :: jupiter
+  
+   call valuessun(sun)
+   call valuesearth(earth)
+   call valuesjupiter(jupiter)
       
-   write(*,*) "Gravity at earth surface is ", gravity
+   call forcevector(earth,sun,fx,fy,fz)
+
+   write(*,*) fx, fy, fz
 
 
-   a%xValue = 24
-   a%yValue = 36
-
-   write(*,*) a%xValue
-   write(*,*) a%yValue
-
-   call printTest1(a)
-
-   write(*,*) a%xValue
-
-   write(*,*) acceleration(mass_earth,radius_earth)
-
-   write(*,*) distance(2.0,2.3,4.0,4.8,5.0,2.0)
 
 End Program aroundAPoint
