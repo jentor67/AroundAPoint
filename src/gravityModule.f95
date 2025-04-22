@@ -1,14 +1,12 @@
 !> \\file gravityModule.f95
 module gravityModule
   implicit none
-  public :: typeTest1, printTest1, acceleration, distance
-  public :: valuessun, forcevector
+  public :: acceleration, distance
+  public :: valuetest, forcevector
   public :: velocitychange,getpartparm, printparticle
   real :: mass 
   real :: gcu = 6.674083E-11
   real :: pie = 3.1415926535897932384626
-  real :: mass_earth = 5.972168E24 
-  real :: radius_earth = 6371000
   real :: timedisp = .000001
  
 
@@ -22,10 +20,6 @@ module gravityModule
     real :: mass
   end type particle
 
-  type typeTest1
-    integer :: xValue
-    integer :: yValue
-  end type typeTest1
 
 contains
 
@@ -47,32 +41,34 @@ contains
     sel%x = sel%x*factor
     sel%y = sel%y*factor
     sel%z = sel%z*factor
+    sel%mass = sel%mass*factor
   end subroutine getpartparm
 
 
-  subroutine positionchange(sel, sel1)
-    type(particle) sel, sel1
+  subroutine positionchange(sel)
+    type(particle) sel
 
-    sel1%x = sel%x+sel%u*timedisp
-    sel1%y = sel%y+sel%v*timedisp
-    sel1%z = sel%z+sel%w*timedisp
+    sel%x = sel%x+sel%u*timedisp
+    sel%y = sel%y+sel%v*timedisp
+    sel%z = sel%z+sel%w*timedisp
 
   end subroutine positionchange
- 
-  subroutine velocitychange(sel, sel1, fx, fy, fz)
+
+
+  subroutine velocitychange(sel, fx, fy, fz)
     real :: fx, fy, fz, masstime
-    type(particle) sel, sel1
+    type(particle) sel 
 
     masstime = timedisp/sel%mass
 
-    sel1%u = sel%u+fx*masstime
-    sel1%v = sel%v+fy*masstime
-    sel1%w = sel%w+fz*masstime
+    sel%u = sel%u+fx*masstime
+    sel%v = sel%v+fy*masstime
+    sel%w = sel%w+fz*masstime
     !write(*,*) sel%u, sel1%u, fx,sel%v, sel1%v, fy, sel%w, sel1%w, fz
   end subroutine velocitychange
 
 
-  subroutine valuessun(sel)
+  subroutine valuetest(sel)
     type(particle) sel
     sel%x=0
     sel%y=0
@@ -80,14 +76,8 @@ contains
     sel%u=0
     sel%v=0
     sel%w=0
-    sel%mass=10000000.0
-  end subroutine valuessun
-
-  subroutine printTest1(at)
-    type(typeTest1) at
-
-    at%xValue = 3
-  end subroutine printTest1
+    sel%mass=1.0
+  end subroutine valuetest
 
 
   function acceleration(m,r) result(grav) 
