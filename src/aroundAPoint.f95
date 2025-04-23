@@ -2,10 +2,10 @@
 Program aroundAPoint
    use gravityModule 
    implicit none
-   integer :: n, m, k, particles, iterations
+   integer :: n, m, k, particles, iterations, io
    real :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
-   type(particle), dimension(100) :: partarray
-   iterations = 1000000
+   type(particle), dimension(3) :: partarray
+   iterations = 10
    particles = size(partarray,dim=1)
 
    call valuetest(partarray(1))
@@ -15,10 +15,10 @@ Program aroundAPoint
      call getpartparm(partarray(n)) 
    end do
 
+   
+   open(newunit=io, file="/home/jmajor/data.txt",status="replace", action="write")
    call printparticle( 1, partarray(1) )
    call printparticle( 2, partarray(2) )
-   call printparticle( 3, partarray(3) )
-   call printparticle( 4, partarray(4) )
 
    do n = 1, iterations
      do m = 1, particles
@@ -36,13 +36,13 @@ Program aroundAPoint
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
      end do
+     call printparticles(partarray, io, particles)
      !call printparticle(1, partarray(n+1,1))
      !call printparticle(2, partarray(n+1,2))
    end do
    write(*,*) n, n*timedisp
    call printparticle( 1, partarray(1) )
    call printparticle( 2, partarray(2) )
-   call printparticle( 3, partarray(3) )
-   call printparticle( 4, partarray(4) )
 
+   close(io)
 End Program aroundAPoint

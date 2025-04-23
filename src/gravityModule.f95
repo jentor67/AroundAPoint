@@ -3,7 +3,7 @@ module gravityModule
   implicit none
   public :: acceleration, distance
   public :: valuetest, forcevector
-  public :: velocitychange,getpartparm, printparticle
+  public :: velocitychange,getpartparm, printparticle, printparticles
   real :: mass 
   real :: gcu = 6.674083E-11
   real :: pie = 3.1415926535897932384626
@@ -96,19 +96,36 @@ contains
 
 
   subroutine forcevector(a, b, fx, fy, fz) 
-    real :: fx, fy, fz, dis1, force
+    real :: fx, fy, fz, dis1, force, constant
     type(particle) a, b
 
     dis1 = distance(a,b)
 
     force = Gcu*a%mass*b%mass/(dis1**2)
+    
+    constant = force/dis1
 
-    fx = force*(b%x-a%x)/dis1
-    fy = force*(b%y-a%y)/dis1
-    fz = force*(b%z-a%z)/dis1
+    fx = constant*(b%x-a%x)
+    fy = constant*(b%y-a%y)
+    fz = constant*(b%z-a%z)
     
   end subroutine forceVector
 
+
+  subroutine printparticles(sel, io, particles)
+    integer :: io, n, particles
+    type(particle) sel(particles)
+    do n = 1, particles
+      if( n == particles ) then
+        write(io,20) sel(n)%x, sel(n)%y, sel(n)%z
+      else
+        write(io,10,advance='no') sel(n)%x, sel(n)%y, sel(n)%z
+      end if
+    end do
+
+    10   format (e17.10,",",e17.10,",",e17.10,",")
+    20   format (e17.10,",",e17.10,",",e17.10)
+  end subroutine printparticles
 
   subroutine printparticle(i, sel)
     integer :: i
