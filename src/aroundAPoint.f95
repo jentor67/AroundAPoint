@@ -9,18 +9,22 @@ Program aroundAPoint
    particles = size(partarray,dim=1)
 
    call valuetest(partarray(1))
+   write(*,*) partarray(1)%x
 
    ! get initial positions of particles
    do n = 2, particles
      call getpartparm(partarray(n)) 
+     write(*,*) partarray(n)%x
    end do
 
+   call printparticles(partarray, io, particles)
    
    open(newunit=io, file="/home/jmajor/data.txt",status="replace", action="write")
    call printparticle( 1, partarray(1) )
    call printparticle( 2, partarray(2) )
 
    do n = 1, iterations
+     call printparticles(partarray, io, particles)
      do m = 1, particles
        fxsum = 0
        fysum = 0
@@ -36,7 +40,7 @@ Program aroundAPoint
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
      end do
-     call printparticles(partarray, io, particles)
+     !call printparticles(partarray, io, particles)
      !call printparticle(1, partarray(n+1,1))
      !call printparticle(2, partarray(n+1,2))
    end do

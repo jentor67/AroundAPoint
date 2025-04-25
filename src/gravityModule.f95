@@ -115,6 +115,7 @@ contains
   subroutine printparticles(sel, io, particles)
     integer :: io, n, particles
     type(particle) sel(particles)
+    write(*,*) sel(1)%x
     do n = 1, particles
       if( n == particles ) then
         write(io,20) sel(n)%x, sel(n)%y, sel(n)%z
