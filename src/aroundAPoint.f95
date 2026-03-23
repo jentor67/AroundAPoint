@@ -4,8 +4,8 @@ Program aroundAPoint
    implicit none
    integer :: n, m, k, particles, iterations, io
    real :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
-   type(particle), dimension(3) :: partarray
-   iterations = 10
+   type(particle), dimension(10) :: partarray
+   iterations = 3600*1000
    particles = size(partarray,dim=1)
 
    call valuetest(partarray(1))
@@ -19,7 +19,7 @@ Program aroundAPoint
 
    call printparticles(partarray, io, particles)
    
-   open(newunit=io, file="/home/jmajor/data.txt",status="replace", action="write")
+   open(newunit=io, file="/mnt/kdrive/data.txt",status="replace", action="write")
    call printparticle( 1, partarray(1) )
    call printparticle( 2, partarray(2) )
 

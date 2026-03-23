@@ -35,15 +35,21 @@ contains
     call random_number(sel%z)
     call random_number(sel%mass)
 
-    sel%u = sel%u*factor
-    sel%v = sel%v*factor
-    sel%w = sel%w*factor
-    sel%x = sel%x*factor
-    sel%y = sel%y*factor
-    sel%z = sel%z*factor
+    sel%u = 0 !(sel%u-.5)*factor
+    sel%v = 0 !(sel%v-.5)*factor
+    sel%w = 0 !(sel%w-.5)*factor
+    sel%x = (sel%x-.5)*factor
+    sel%y = (sel%y-.5)*factor
+    sel%z = (sel%z-.5)*factor
     sel%mass = sel%mass*factor
   end subroutine getpartparm
 
+  subroutine getparticleparm(sel)
+    type(particle) sel
+
+
+
+  end subroutine getparticleparm(sel)
 
   subroutine positionchange(sel)
     type(particle) sel
@@ -76,7 +82,7 @@ contains
     sel%u=0
     sel%v=0
     sel%w=0
-    sel%mass=1.0
+    sel%mass=10.0
   end subroutine valuetest
 
 
@@ -115,17 +121,15 @@ contains
   subroutine printparticles(sel, io, particles)
     integer :: io, n, particles
     type(particle) sel(particles)
-    write(*,*) sel(1)%x
+    !write(*,*) sel(1)%x
     do n = 1, particles
-      if( n == particles ) then
-        write(io,20) sel(n)%x, sel(n)%y, sel(n)%z
-      else
-        write(io,10,advance='no') sel(n)%x, sel(n)%y, sel(n)%z
-      end if
+      write(io,40) sel(n)%x, sel(n)%y, sel(n)%z
     end do
 
     10   format (e17.10,",",e17.10,",",e17.10,",")
-    20   format (e17.10,",",e17.10,",",e17.10)
+    30   format (e17.10,e17.10,e17.10)
+    40   format (e17.10," ",e17.10," ",e17.10)
+    !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
 
   subroutine printparticle(i, sel)
