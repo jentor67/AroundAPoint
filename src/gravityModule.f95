@@ -1,5 +1,6 @@
 !> \\file gravityModule.f95
 module gravityModule
+  use startParameters
   implicit none
   public :: acceleration, distance
   public :: valuetest, forcevector
@@ -17,7 +18,13 @@ module gravityModule
     real :: u
     real :: v
     real :: w
+    real :: omega
+    real :: e
+    real :: i
+    real :: omegaBIG
     real :: mass
+    real :: a
+    real :: nue
   end type particle
 
 
@@ -26,6 +33,8 @@ contains
   subroutine getpartparm(sel)
     type(particle) sel
     real :: factor
+    real :: omega, e, i, omegaBIG, a, nue
+    real :: xt, yt, zt, ut, vt, wt;
     factor = .00001
     call random_number(sel%u)
     call random_number(sel%v)
@@ -33,7 +42,63 @@ contains
     call random_number(sel%x)
     call random_number(sel%y)
     call random_number(sel%z)
-    call random_number(sel%mass)
+    omega = randomArgumentOfPeriapsis()
+    e = randomEccentricity() 
+    i = randomInclination() 
+    omegaBIG = randomLongitudeOfAscendingNode()
+    sel%mass = randomMass()
+    a = randomSimiMajorAxis()
+    nue = randomTrueAnomaly() 
+
+    
+    ! Rotate nue  degrees
+    r = a*(1-pow(e,2))/(1+e*cos(nue/180*pi));
+    sel%x = r*cos(pi*nue/180);
+    xp = a-rp+sel%x;
+    sel%y = r*sin(pi*nue/180);
+    rho = 180*atan( sel%y/xp )/pi;
+    sel%z = 1.0;
+
+    if( xp < 0 ) rho += 180;
+
+    if( ( xp > 0 ) && ( sel%y < 0 ) ) rho += 360; 
+
+    sel%v = pow( (2*mue/r) - (mue/a), .5);
+    
+    tangentVectorEllipse(xp, sel%y, a, b, sel%v, &ut, &vt);
+    sel%u = ut;
+    sel%v = vt;
+
+    ! Rotate omega  degrees
+    rotate2D(sel%x, sel%y, omega, &xt, &yt);
+    sel%x = xt;
+    sel%y = yt;
+
+    rotate2D(sel%u, sel%v, omega, &ut, &vt);
+    sel%u = ut;
+    sel%v = vt;
+
+    ! Rotate i degrees
+    rotate2D(sel%y, sle%z, i, &yt, &zt);
+    sel%y = yt;
+    sel%z = zt;
+   
+    rotate2D(sel%v, sel%w,  i, &vt, &wt);
+    sel%v = vt;
+    sel%w = wt; 
+
+    ! Rotate OMEGA degrees
+    rotate2D(sel%x, sel%y, OMEGA, &xt, &yt);
+    sel%x = xt;
+    sel%y = yt;
+
+
+    rotate2D(sel%u, sel%v, OMEGA, &ut, &vt);
+    sel%u = ut;
+    sel%v = vt;
+
+
+
 
     sel%u = 0 !(sel%u-.5)*factor
     sel%v = 0 !(sel%v-.5)*factor
@@ -43,13 +108,6 @@ contains
     sel%z = (sel%z-.5)*factor
     sel%mass = sel%mass*factor
   end subroutine getpartparm
-
-  subroutine getparticleparm(sel)
-    type(particle) sel
-
-
-
-  end subroutine getparticleparm(sel)
 
   subroutine positionchange(sel)
     type(particle) sel
@@ -123,6 +181,7 @@ contains
     type(particle) sel(particles)
     !write(*,*) sel(1)%x
     do n = 1, particles
+      write(*,*) sel(n)%e
       write(io,40) sel(n)%x, sel(n)%y, sel(n)%z
     end do
 

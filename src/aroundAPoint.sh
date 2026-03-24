@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 strings=(
+  startParameters
   gravityModule
   aroundAPoint
 )
@@ -12,4 +13,5 @@ done
 gfortran -ffree-form -c $FILES
 
 FILES="${FILES//f95/o}"
+
 gfortran $FILES

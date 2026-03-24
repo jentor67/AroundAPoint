@@ -1,11 +1,12 @@
 !> \\file aroundAPoint.f
 Program aroundAPoint
-   use gravityModule 
+   use gravityModule
+   use startParameters 
    implicit none
    integer :: n, m, k, particles, iterations, io
    real :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
    type(particle), dimension(10) :: partarray
-   iterations = 3600*1000
+   iterations = 1000
    particles = size(partarray,dim=1)
 
    call valuetest(partarray(1))
