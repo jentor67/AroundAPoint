@@ -1,6 +1,7 @@
 !> \\file gravityModule.f95
 module gravityModule
   use startParameters
+  use vectorModule
   implicit none
   public :: acceleration, distance
   public :: valuetest, forcevector
@@ -9,6 +10,8 @@ module gravityModule
   real :: gcu = 6.674083E-11
   real :: pie = 3.1415926535897932384626
   real :: timedisp = .000001
+  real :: SOLARMASS = 1.989E30 !; // kg
+  real :: mSagA = 1.989E30*4.31e6!; // kg
  
 
   type particle
@@ -34,7 +37,8 @@ contains
     type(particle) sel
     real :: factor
     real :: omega, e, i, omegaBIG, a, nue
-    real :: xt, yt, zt, ut, vt, wt;
+    real :: xt, yt, zt, ut, vt, wt
+    real :: rho, b, mue, r, ra, rp, T
     factor = .00001
     call random_number(sel%u)
     call random_number(sel%v)
@@ -50,63 +54,11 @@ contains
     a = randomSimiMajorAxis()
     nue = randomTrueAnomaly() 
 
-    
-    ! Rotate nue  degrees
-    r = a*(1-pow(e,2))/(1+e*cos(nue/180*pi));
-    sel%x = r*cos(pi*nue/180);
-    xp = a-rp+sel%x;
-    sel%y = r*sin(pi*nue/180);
-    rho = 180*atan( sel%y/xp )/pi;
-    sel%z = 1.0;
+    call radiusVelocity(sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T)
 
-    if( xp < 0 ) rho += 180;
+    call startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b, &
+            sel%x, sel%y, sel%z, sel%u, sel%v, sel%w)
 
-    if( ( xp > 0 ) && ( sel%y < 0 ) ) rho += 360; 
-
-    sel%v = pow( (2*mue/r) - (mue/a), .5);
-    
-    tangentVectorEllipse(xp, sel%y, a, b, sel%v, &ut, &vt);
-    sel%u = ut;
-    sel%v = vt;
-
-    ! Rotate omega  degrees
-    rotate2D(sel%x, sel%y, omega, &xt, &yt);
-    sel%x = xt;
-    sel%y = yt;
-
-    rotate2D(sel%u, sel%v, omega, &ut, &vt);
-    sel%u = ut;
-    sel%v = vt;
-
-    ! Rotate i degrees
-    rotate2D(sel%y, sle%z, i, &yt, &zt);
-    sel%y = yt;
-    sel%z = zt;
-   
-    rotate2D(sel%v, sel%w,  i, &vt, &wt);
-    sel%v = vt;
-    sel%w = wt; 
-
-    ! Rotate OMEGA degrees
-    rotate2D(sel%x, sel%y, OMEGA, &xt, &yt);
-    sel%x = xt;
-    sel%y = yt;
-
-
-    rotate2D(sel%u, sel%v, OMEGA, &ut, &vt);
-    sel%u = ut;
-    sel%v = vt;
-
-
-
-
-    sel%u = 0 !(sel%u-.5)*factor
-    sel%v = 0 !(sel%v-.5)*factor
-    sel%w = 0 !(sel%w-.5)*factor
-    sel%x = (sel%x-.5)*factor
-    sel%y = (sel%y-.5)*factor
-    sel%z = (sel%z-.5)*factor
-    sel%mass = sel%mass*factor
   end subroutine getpartparm
 
   subroutine positionchange(sel)
@@ -117,6 +69,62 @@ contains
     sel%z = sel%z+sel%w*timedisp
 
   end subroutine positionchange
+
+  subroutine startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w)
+    real :: a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w
+    real :: r, rho, xp;
+    real :: xt, yt, zt, ut, vt, wt;
+
+    !// Rotate nue  degrees
+    r = a*(1-(e**2))/(1+e*cos(nue/180*pi))
+    x = r*cos(pi*nue/180)
+    xp = a-rp+x
+    y = r*sin(pi*nue/180)
+    rho = 180*atan( y/xp )/pi
+    z = 1.0
+
+    if( xp < 0 ) rho = rho + 180
+
+    if( ( xp > 0 ) .and. ( y < 0 ) ) rho = rho +  360
+
+    v = ( (2*mue/r) - (mue/a) )**.5
+
+
+    call tangentVectorEllipse(xp, y, a, b, v, ut, vt)
+    u = ut
+    v = vt
+
+
+    !// Rotate omega  degrees
+    call rotate2D(x, y, omega, xt, yt)
+    x = xt
+    y = yt
+
+    call rotate2D(u, v, omega, ut, vt)
+    u = ut
+    v = vt
+
+    !// Rotate i degrees
+    call rotate2D(y, z, i, yt, zt)
+    y = yt
+    z = zt
+
+    call rotate2D(v, w,  i, vt, wt)
+    v = vt
+    w = wt
+
+    !// Rotate OMEGA degrees
+    call rotate2D(x, y, OMEGA, xt, yt)
+    x = xt
+    y = yt
+
+
+    call rotate2D(u, v, OMEGA, ut, vt)
+    u = ut
+    v = vt
+
+
+  end subroutine startPointVelocity
 
 
   subroutine velocitychange(sel, fx, fy, fz)
@@ -196,6 +204,17 @@ contains
     type(particle) sel
     write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, sel%mass
   end subroutine printparticle
+
+
+  subroutine radiusVelocity(m, a, e, i,omegaBIG, omega, rp, ra,mue, T )
+    real :: m, a, e, i,omegaBIG, omega, rp, ra,mue, T 
+    real :: tmue;
+    rp = (1-e)*a ! distance at perigee (m)
+    ra = (1+e)*a ! distance at apogee (m)
+    tmue = gcu*(mSagA+m) ! standard gravitational parameters
+    T = 2 * pi * (( (a**3) /tmue )**.5) ! Peroid
+    mue = tmue
+  end subroutine radiusVelocity
 
 
 end module gravityModule

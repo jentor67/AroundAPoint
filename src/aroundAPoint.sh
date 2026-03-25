@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 strings=(
+  vectorModule
   startParameters
   gravityModule
   aroundAPoint
