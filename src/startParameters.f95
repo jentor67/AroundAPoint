@@ -36,18 +36,24 @@ contains
     OMEGA = OMEGA*360
   end function
 
-  function randomMass() result(m)
-    real :: m
+  ! determine the mass
+  function randomMass(min, max) result(m)
+    real :: m, min, max, diff
+
+    diff = max - min
+
     call random_number(m)
+
+    m = m*diff
+    m = min+m
+
   end function 
 
   !  determine the semi-major axis
-  function randomSimiMajorAxis() result(a)
+  function randomSimiMajorAxis(min, max) result(a)
     real :: a
     real :: diff, max, min
     
-    max = 1
-    min = .5
     diff = max - min
 
     call random_number(a)

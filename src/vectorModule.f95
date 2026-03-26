@@ -4,6 +4,7 @@ module vectorModule
   public rotate2D, tangentVectorEllipse, unitVector, Vector
 
   real :: pi = 4.0 * ATAN(1.0)
+
 contains
 
   subroutine rotate2D(x, y, angle, x0, y0)

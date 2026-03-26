@@ -35,11 +35,10 @@ contains
 
   subroutine getpartparm(sel)
     type(particle) sel
-    real :: factor
+
     real :: omega, e, i, omegaBIG, a, nue
     real :: xt, yt, zt, ut, vt, wt
     real :: rho, b, mue, r, ra, rp, T
-    factor = .00001
     call random_number(sel%u)
     call random_number(sel%v)
     call random_number(sel%w)
@@ -50,8 +49,8 @@ contains
     e = randomEccentricity() 
     i = randomInclination() 
     omegaBIG = randomLongitudeOfAscendingNode()
-    sel%mass = randomMass()
-    a = randomSimiMajorAxis()
+    sel%mass = randomMass(1.0, 2.0)
+    a = randomSimiMajorAxis(.5, 1.0)
     nue = randomTrueAnomaly() 
 
     call radiusVelocity(sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T)
@@ -184,13 +183,16 @@ contains
   end subroutine forceVector
 
 
-  subroutine printparticles(sel, io, particles)
-    integer :: io, n, particles
+  !subroutine printparticles(sel, io, particles)
+  subroutine printparticles(sel, units, particles)
+    integer, intent(inout) :: units(:)
+    integer :: n, particles
     type(particle) sel(particles)
-    !write(*,*) sel(1)%x
+    
+    write(*,*) particles, sel(1)%x
     do n = 1, particles
-      write(*,*) sel(n)%e
-      write(io,40) sel(n)%x, sel(n)%y, sel(n)%z
+      !write(*,*) sel(n)%e
+      write(units(n),40) sel(n)%x, sel(n)%y, sel(n)%z
     end do
 
     10   format (e17.10,",",e17.10,",",e17.10,",")
