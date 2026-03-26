@@ -22,6 +22,7 @@ contains
     real :: vx1, vy1, vz1
     real :: vx0, vy0
   
+
     E = (b/a)**2
     F = ( (b**2) - E*(x**2) )**.5
   

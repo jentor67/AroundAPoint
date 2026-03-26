@@ -12,7 +12,7 @@ module gravityModule
   real :: timedisp = .000001
   real :: SOLARMASS = 1.989E30 !; // kg
   real :: mSagA = 1.989E30*4.31e6!; // kg
- 
+  real :: mass1 = 10 
 
   type particle
     real :: x
@@ -49,8 +49,9 @@ contains
     e = randomEccentricity() 
     i = randomInclination() 
     omegaBIG = randomLongitudeOfAscendingNode()
-    sel%mass = randomMass(1.0, 2.0)
-    a = randomSimiMajorAxis(.5, 1.0)
+    sel%mass = randomMass(4.0, 6.0)
+    a = randomSimiMajorAxis(.000005, .00001)
+    b = a*((1-(e**2))**.5);
     nue = randomTrueAnomaly() 
 
     call radiusVelocity(sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T)
@@ -90,6 +91,7 @@ contains
 
 
     call tangentVectorEllipse(xp, y, a, b, v, ut, vt)
+    !write(*,*) "tangetVenctor",ut, vt
     u = ut
     v = vt
 
@@ -147,7 +149,7 @@ contains
     sel%u=0
     sel%v=0
     sel%w=0
-    sel%mass=10.0
+    sel%mass=mass1
   end subroutine valuetest
 
 
@@ -189,7 +191,7 @@ contains
     integer :: n, particles
     type(particle) sel(particles)
     
-    write(*,*) particles, sel(1)%x
+    !write(*,*) particles, sel(1)%x
     do n = 1, particles
       !write(*,*) sel(n)%e
       write(units(n),40) sel(n)%x, sel(n)%y, sel(n)%z
@@ -213,7 +215,7 @@ contains
     real :: tmue;
     rp = (1-e)*a ! distance at perigee (m)
     ra = (1+e)*a ! distance at apogee (m)
-    tmue = gcu*(mSagA+m) ! standard gravitational parameters
+    tmue = gcu*(mass1+m) ! standard gravitational parameters
     T = 2 * pi * (( (a**3) /tmue )**.5) ! Peroid
     mue = tmue
   end subroutine radiusVelocity
