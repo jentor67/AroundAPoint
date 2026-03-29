@@ -9,10 +9,10 @@ module gravityModule
   real :: mass 
   real :: gcu = 6.674083E-11
   real :: pie = 3.1415926535897932384626
-  real :: timedisp = .000001
+  real :: timedisp = 1 !.000001
   real :: SOLARMASS = 1.989E30 !; // kg
-  real :: mSagA = 1.989E30*4.31e6!; // kg
-  real :: mass1 = 10 
+  real :: mass1 = 1.989E30!; // kg
+  !real :: mass1 = 10 
 
   type particle
     real :: x
@@ -39,25 +39,24 @@ contains
     real :: omega, e, i, omegaBIG, a, nue
     real :: xt, yt, zt, ut, vt, wt
     real :: rho, b, mue, r, ra, rp, T
-    call random_number(sel%u)
-    call random_number(sel%v)
-    call random_number(sel%w)
-    call random_number(sel%x)
-    call random_number(sel%y)
-    call random_number(sel%z)
+
     omega = randomArgumentOfPeriapsis()
-    e = randomEccentricity() 
-    i = randomInclination() 
+    e = 0.0167086 ! randomEccentricity() 
+    i = 7.155 ! randomInclination() 
     omegaBIG = randomLongitudeOfAscendingNode()
-    sel%mass = randomMass(4.0, 6.0)
-    a = randomSimiMajorAxis(.000005, .00001)
+    sel%mass = 5.97217E24 ! randomMass(4.0, 6.0)
+    a = 149598023000.0 ! randomSimiMajorAxis(.000005, .00001)
     b = a*((1-(e**2))**.5);
     nue = randomTrueAnomaly() 
 
+    !write(*,*)  a, b, e, i, omegaBIG, omega, nue
+
     call radiusVelocity(sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T)
+    !write(*,*) sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T
 
     call startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b, &
             sel%x, sel%y, sel%z, sel%u, sel%v, sel%w)
+    !write(*,*) a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
 
   end subroutine getpartparm
 
@@ -164,20 +163,24 @@ contains
     type(particle) a, b
     real :: r
 
+    
     r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
+    !write(*,*) "radius:",a%x, a%y, a%z, b%x, b%y, b%z, r
   end function
 
 
   subroutine forcevector(a, b, fx, fy, fz) 
-    real :: fx, fy, fz, dis1, force, constant
+    real :: fx, fy, fz, dis1
+    double precision :: force, constant
     type(particle) a, b
 
     dis1 = distance(a,b)
 
-    force = Gcu*a%mass*b%mass/(dis1**2)
+    !write(*,*) gcu, a%mass, b%mass, dis1
+    force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     
     constant = force/dis1
-
+    !write(*,*) "Corridinates:",a%x, a%y, a%z, b%x, b%y, b%z, dis1,force, constant
     fx = constant*(b%x-a%x)
     fy = constant*(b%y-a%y)
     fz = constant*(b%z-a%z)
@@ -206,7 +209,7 @@ contains
   subroutine printparticle(i, sel)
     integer :: i
     type(particle) sel
-    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, sel%mass
+    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, sel%mass
   end subroutine printparticle
 
 

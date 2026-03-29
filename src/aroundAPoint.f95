@@ -7,11 +7,15 @@ Program aroundAPoint
    character(len=100) :: filename
    integer :: n, m, k, particles, iterations, io
    real :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
-   type(particle), dimension(10) :: partarray
+   real :: startX, startY, startZ, r
+   type(particle), dimension(2) :: partarray
    
    call execute_command_line("rm -f /mnt/kdrive/*.dat")
   
-   iterations = 1000000 
+   iterations = 3600*24*365.25  ! one year
+   !iterations = 315360  ! 1 % one year
+   !iterations = 3  ! 1 % one year
+   
    particles = size(partarray,dim=1)
    !write(*,*) particles
    call valuetest(partarray(1))
@@ -30,12 +34,20 @@ Program aroundAPoint
    !write(*,*) "Before loop",particles
    !open(newunit=io, file="/mnt/kdrive/data.txt",status="replace", action="write")
 
+   !write(*,*) " "
+   !write(*,*) " "
    ! print initial values
    do n = 1, particles
      call printparticle( n, partarray(n) )
    end do
 
+   startX = partarray(2)%x
+   startY = partarray(2)%y
+   startZ = partarray(2)%z
+   !write(*,*) " "
+   write(*,*) "Start of Iterations"
    do n = 1, iterations
+     !write(*,*) "Iteration---------------------------------------:", n
      !write(*,*) "Test loop",particles
      !call printparticles(partarray, units(n), particles)
      call printparticles(partarray, units, particles)
@@ -49,16 +61,26 @@ Program aroundAPoint
            fxsum = fxsum + fx
            fysum = fysum + fy
            fzsum = fzsum + fz
+           !write(*,*) "Partical:",k, fxsum, fysum, fzsum
          end if
        end do
+       !write(*,*) "Partical Prime:",m, fxsum, fysum, fzsum
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
+       !write(*,*) " "
      end do
      !call printparticles(partarray, io, particles)
      !call printparticle(1, partarray(n+1,1))
      !call printparticle(2, partarray(n+1,2))
    end do
-   write(*,*) "Final value"
+   write(*,*) "End of Iterations"
+
+   r = ( ((startX-partarray(2)%x)**2) + &
+         ((startY-partarray(2)%y)**2) + &
+         ((startZ-partarray(2)%x)**2) )**.5
+
+   write(*,*) r
+
    ! print final values
    do n = 1, particles
      call printparticle( n, partarray(n) )
