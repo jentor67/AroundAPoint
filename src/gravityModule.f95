@@ -15,19 +15,21 @@ module gravityModule
   !real :: mass1 = 10 
 
   type particle
-    real :: x
-    real :: y
-    real :: z
-    real :: u
-    real :: v
-    real :: w
+    real*8 :: x
+    real*8 :: y
+    real*8 :: z
+    real*8 :: u
+    real*8 :: v
+    real*8 :: w
     real :: omega
     real :: e
     real :: i
     real :: omegaBIG
-    real :: mass
-    real :: a
+    real*8 :: mass
+    real*8 :: a
+    real*8 :: b
     real :: nue
+    real :: mue
   end type particle
 
 
@@ -37,26 +39,28 @@ contains
     type(particle) sel
 
     real :: omega, e, i, omegaBIG, a, nue
-    real :: xt, yt, zt, ut, vt, wt
-    real :: rho, b, mue, r, ra, rp, T
+    real*8 :: xt, yt, zt, ut, vt, wt, r, ra, rp, b
+    real :: rho, mue, T
 
-    omega = randomArgumentOfPeriapsis()
-    e = 0.0167086 ! randomEccentricity() 
-    i = 7.155 ! randomInclination() 
-    omegaBIG = randomLongitudeOfAscendingNode()
+    sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
+    sel%e = 0.0167086 ! randomEccentricity() 
+    sel%i = 7.155 ! randomInclination() 
+    sel%omegaBIG = -11.26064 ! randomLongitudeOfAscendingNode()
     sel%mass = 5.97217E24 ! randomMass(4.0, 6.0)
-    a = 149598023000.0 ! randomSimiMajorAxis(.000005, .00001)
-    b = a*((1-(e**2))**.5);
-    nue = randomTrueAnomaly() 
+    sel%a = 1.49598023E12 ! randomSimiMajorAxis(.000005, .00001)
+    sel%b = sel%a*((1-(e**2))**.5);
+    sel%nue = 357.5 !randomTrueAnomaly() 
 
-    !write(*,*)  a, b, e, i, omegaBIG, omega, nue
+    !write(*,*) "Values",  sel%a, sel%b, sel%e, sel%i, sel%omegaBIG, sel%omega, sel%nue
 
-    call radiusVelocity(sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T)
+    call radiusVelocity(sel%mass, sel%a, sel%e, sel%i, sel%omegaBIG, &
+            sel%omega, rp, ra, sel%mue, T)
     !write(*,*) sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T
 
-    call startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b, &
-            sel%x, sel%y, sel%z, sel%u, sel%v, sel%w)
-    !write(*,*) a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
+    call startPointVelocity(sel)
+    write(*,*) sel%u,sel%v,sel%w
+    !write(*,*) "Velocity",a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
+    !write(*,*) "Velocity",sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
 
   end subroutine getpartparm
 
@@ -69,74 +73,81 @@ contains
 
   end subroutine positionchange
 
-  subroutine startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w)
-    real :: a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w
-    real :: r, rho, xp;
-    real :: xt, yt, zt, ut, vt, wt;
+  !subroutine startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w)
+  subroutine startPointVelocity(sel)
+    type(particle) sel
+    real*8 :: r, rp, rho, xp;
+    real*8 :: xt, yt, zt, ut, vt, wt;
 
     !// Rotate nue  degrees
-    r = a*(1-(e**2))/(1+e*cos(nue/180*pi))
-    x = r*cos(pi*nue/180)
-    xp = a-rp+x
-    y = r*sin(pi*nue/180)
-    rho = 180*atan( y/xp )/pi
-    z = 1.0
+    r = sel%a*(1-(sel%e**2))/(1+sel%e*cos(sel%nue/180*pi))
+    sel%x = r*cos(pi*sel%nue/180)
+    xp = sel%a-rp+sel%x
+    sel%y = r*sin(pi*sel%nue/180)
+    rho = 180*atan( sel%y/xp )/pi
+    sel%z = 1.0
 
     if( xp < 0 ) rho = rho + 180
 
-    if( ( xp > 0 ) .and. ( y < 0 ) ) rho = rho +  360
+    if( ( xp > 0 ) .and. ( sel%y < 0 ) ) rho = rho +  360
 
-    v = ( (2*mue/r) - (mue/a) )**.5
+    sel%v = ( (2*sel%mue/r) - (sel%mue/sel%a) )**.5
 
+    write(*,*) "v", sel%v
 
-    call tangentVectorEllipse(xp, y, a, b, v, ut, vt)
-    !write(*,*) "tangetVenctor",ut, vt
-    u = ut
-    v = vt
+    !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
+    call tangentVectorEllipse(xp, sel%y, sel%a,sel%b, sel%v, ut, vt)
+    !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
+    sel%u = ut
+    sel%v = vt
+    write(*,*) "v", sel%v
 
 
     !// Rotate omega  degrees
-    call rotate2D(x, y, omega, xt, yt)
-    x = xt
-    y = yt
+    call rotate2D(sel%x, sel%y, sel%omega, xt, yt)
+    sel%x = xt
+    sel%y = yt
 
-    call rotate2D(u, v, omega, ut, vt)
-    u = ut
-    v = vt
+    call rotate2D(sel%u, sel%v, sel%omega, ut, vt)
+    sel%u = ut
+    sel%v = vt
 
     !// Rotate i degrees
-    call rotate2D(y, z, i, yt, zt)
-    y = yt
-    z = zt
+    call rotate2D(sel%y, sel%z, sel%i, yt, zt)
+    sel%y = yt
+    sel%z = zt
 
-    call rotate2D(v, w,  i, vt, wt)
-    v = vt
-    w = wt
+    call rotate2D(sel%v, sel%w,  sel%i, vt, wt)
+    sel%v = vt
+    sel%w = wt
 
     !// Rotate OMEGA degrees
-    call rotate2D(x, y, OMEGA, xt, yt)
-    x = xt
-    y = yt
+    call rotate2D(sel%x, sel%y, sel%OMEGA, xt, yt)
+    sel%x = xt
+    sel%y = yt
 
 
-    call rotate2D(u, v, OMEGA, ut, vt)
-    u = ut
-    v = vt
+    call rotate2D(sel%u, sel%v, sel%OMEGA, ut, vt)
+    sel%u = ut
+    sel%v = vt
 
 
   end subroutine startPointVelocity
 
 
   subroutine velocitychange(sel, fx, fy, fz)
-    real :: fx, fy, fz, masstime
+    real*8 :: fx, fy, fz, masstime
     type(particle) sel 
 
     masstime = timedisp/sel%mass
 
+    !write(*,*) "Mass",sel%mass
+
+    !write(*,*) "Speed Old:", sel%u, sel%v, sel%w, fx, fy, fz
     sel%u = sel%u+fx*masstime
     sel%v = sel%v+fy*masstime
     sel%w = sel%w+fz*masstime
-    !write(*,*) sel%u, sel1%u, fx,sel%v, sel1%v, fy, sel%w, sel1%w, fz
+    !write(*,*) "Speed new:", sel%u, sel%v, sel%w, fx, fy, fz
   end subroutine velocitychange
 
 
@@ -153,7 +164,7 @@ contains
 
 
   function acceleration(m,r) result(grav) 
-    real :: grav, m, r
+    real*8 :: grav, m, r
 
     grav = gcu*m/(r**2)
   end function 
@@ -161,17 +172,17 @@ contains
 
   function distance(a, b) result(r) 
     type(particle) a, b
-    real :: r
+    real*8 :: r  ! good
 
-    
+    !write(*,*) "TEST",b%x, r
+
     r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
     !write(*,*) "radius:",a%x, a%y, a%z, b%x, b%y, b%z, r
   end function
 
 
   subroutine forcevector(a, b, fx, fy, fz) 
-    real :: fx, fy, fz, dis1
-    double precision :: force, constant
+    real*8 :: fx, fy, fz, dis1,force, constant
     type(particle) a, b
 
     dis1 = distance(a,b)
@@ -214,7 +225,8 @@ contains
 
 
   subroutine radiusVelocity(m, a, e, i,omegaBIG, omega, rp, ra,mue, T )
-    real :: m, a, e, i,omegaBIG, omega, rp, ra,mue, T 
+    real :: e, i, omegaBIG, omega, mue, T  
+    real*8 :: m, a, rp, ra
     real :: tmue;
     rp = (1-e)*a ! distance at perigee (m)
     ra = (1+e)*a ! distance at apogee (m)
