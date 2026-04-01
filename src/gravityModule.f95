@@ -7,11 +7,11 @@ module gravityModule
   public :: valuetest, forcevector
   public :: velocitychange,getpartparm, printparticle, printparticles
   real :: mass 
-  real :: gcu = 6.674083E-11
-  real :: pie = 3.1415926535897932384626
-  real :: timedisp = 1 !.000001
-  real :: SOLARMASS = 1.989E30 !; // kg
-  real :: mass1 = 1.989E30!; // kg
+  real*8 :: gcu = 6.674083E-11
+  real*8 :: pie = 3.1415926535897932384626
+  real*8 :: timedisp = 1 !.000001
+  real*8 :: SOLARMASS = 1.989E30 !; // kg
+  real*8 :: mass1 = 1.989E30!; // kg
   !real :: mass1 = 10 
 
   type particle
@@ -46,8 +46,8 @@ contains
     sel%e = 0.0167086 ! randomEccentricity() 
     sel%i = 7.155 ! randomInclination() 
     sel%omegaBIG = -11.26064 ! randomLongitudeOfAscendingNode()
-    sel%mass = 5.97217E24 ! randomMass(4.0, 6.0)
-    sel%a = 1.49598023E12 ! randomSimiMajorAxis(.000005, .00001)
+    sel%mass = 5.97217E24 + 7.346E22  ! randomMass(4.0, 6.0)
+    sel%a = 1.49598023E11 ! randomSimiMajorAxis(.000005, .00001)
     sel%b = sel%a*((1-(e**2))**.5);
     sel%nue = 357.5 !randomTrueAnomaly() 
 

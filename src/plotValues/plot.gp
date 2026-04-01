@@ -22,8 +22,9 @@ lineCount=3000000
 
 #splot 'obj1.txt' every ::0::'$lineCount' with lines #, \
 
-splot '/mnt/kdrive/file_00000001.dat' with lines , \
-'/mnt/kdrive/file_00000002.dat' with lines
+splot '/mnt/kdrive/file_00000001.dat' with lines 
+#, \
+#'/mnt/kdrive/file_00000002.dat' with lines
 #'/mnt/kdrive/file_00000004.dat' with lines , \
 #'/mnt/kdrive/file_00000005.dat' with lines , \
 #'/mnt/kdrive/file_00000006.dat' with lines , \
