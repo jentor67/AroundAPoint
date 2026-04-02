@@ -11,8 +11,8 @@ module gravityModule
   real*8 :: pie = 3.1415926535897932384626
   real*8 :: timedisp = 1 !.000001
   real*8 :: SOLARMASS = 1.989E30 !; // kg
-  real*8 :: mass1 = 1.989E30!; // kg
-  !real :: mass1 = 10 
+  real*8 :: mass1 = 10.0 ! = 1.989E30!; // kg
+  !real*8 :: mass1 = 1.989E30!; // kg
 
   type particle
     real*8 :: x
@@ -38,28 +38,38 @@ contains
   subroutine getpartparm(sel)
     type(particle) sel
 
-    real :: omega, e, i, omegaBIG, a, nue
     real*8 :: xt, yt, zt, ut, vt, wt, r, ra, rp, b
-    real :: rho, mue, T
+    real*8 :: T
 
-    sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
-    sel%e = 0.0167086 ! randomEccentricity() 
-    sel%i = 7.155 ! randomInclination() 
-    sel%omegaBIG = -11.26064 ! randomLongitudeOfAscendingNode()
-    sel%mass = 5.97217E24 + 7.346E22  ! randomMass(4.0, 6.0)
-    sel%a = 1.49598023E11 ! randomSimiMajorAxis(.000005, .00001)
-    sel%b = sel%a*((1-(e**2))**.5);
-    sel%nue = 357.5 !randomTrueAnomaly() 
+    ! ***** Earth parameters *****
+    !sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
+    !sel%e = 0.0167086 ! randomEccentricity() 
+    !sel%i = 7.155 ! randomInclination() 
+    !sel%omegaBIG = -11.26064 ! randomLongitudeOfAscendingNode()
+    !sel%mass = 5.97217E24 + 7.346E22  ! randomMass(4.0, 6.0)
+    !sel%a = 1.49598023E11 ! randomSimiMajorAxis(.000005, .00001)
+    !sel%b = sel%a*((1-(sel%e**2))**.5);
+    !sel%nue = 357.5 !randomTrueAnomaly() 
 
-    !write(*,*) "Values",  sel%a, sel%b, sel%e, sel%i, sel%omegaBIG, sel%omega, sel%nue
+    sel%omega = randomArgumentOfPeriapsis()
+    sel%e = randomEccentricity() 
+    sel%i =  randomInclination() 
+    sel%omegaBIG = randomLongitudeOfAscendingNode()
+    sel%mass = randomMass(.4, .6)
+    sel%a = randomSimiMajorAxis(5.0, 10.0)
+    sel%b = sel%a*((1-(sel%e**2))**.5);
+    sel%nue = randomTrueAnomaly() 
+    write(*,*) "Values",  sel%omega, sel%e, sel%i, sel%omegaBIG, &
+            sel%mass, sel%a, sel%b, sel%nue
 
     call radiusVelocity(sel%mass, sel%a, sel%e, sel%i, sel%omegaBIG, &
             sel%omega, rp, ra, sel%mue, T)
-    !write(*,*) sel%mass, a, e, i, omegaBIG, omega, rp, ra, mue, T
+    write(*,*) "After radiusVelocity", rp, ra, sel%mue, T
 
-    call startPointVelocity(sel)
-    write(*,*) sel%u,sel%v,sel%w
-    !write(*,*) "Velocity",a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
+    call startPointVelocity(sel,rp)
+    write(*,*) "After startPointVelocity",sel%u,sel%v,sel%w
+    !write(*,*) "Velocity",a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, &
+    !sel%y, sel%z, sel%u, sel%v, sel%w
     !write(*,*) "Velocity",sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
 
   end subroutine getpartparm
@@ -73,18 +83,17 @@ contains
 
   end subroutine positionchange
 
-  !subroutine startPointVelocity(a,e,nue,rp,omega,i,omegaBIG,mue,b,x,y,z,u,v,w)
-  subroutine startPointVelocity(sel)
+  subroutine startPointVelocity(sel,rp)
     type(particle) sel
-    real*8 :: r, rp, rho, xp;
+    real*8 :: rp, rho, xp, r;
     real*8 :: xt, yt, zt, ut, vt, wt;
 
     !// Rotate nue  degrees
-    r = sel%a*(1-(sel%e**2))/(1+sel%e*cos(sel%nue/180*pi))
-    sel%x = r*cos(pi*sel%nue/180)
+    r = sel%a*(1-(sel%e**2))/(1+sel%e*cos(sel%nue/180*pie))
+    sel%x = r*cos(pie*sel%nue/180)
     xp = sel%a-rp+sel%x
-    sel%y = r*sin(pi*sel%nue/180)
-    rho = 180*atan( sel%y/xp )/pi
+    sel%y = r*sin(pie*sel%nue/180)
+    rho = 180*atan( sel%y/xp )/pie
     sel%z = 1.0
 
     if( xp < 0 ) rho = rho + 180
@@ -191,7 +200,8 @@ contains
     force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     
     constant = force/dis1
-    !write(*,*) "Corridinates:",a%x, a%y, a%z, b%x, b%y, b%z, dis1,force, constant
+    !write(*,*) "Corridinates:",a%x, a%y, a%z, b%x, b%y, b%z, dis1, &
+    !force, constant
     fx = constant*(b%x-a%x)
     fy = constant*(b%y-a%y)
     fz = constant*(b%z-a%z)
@@ -208,12 +218,14 @@ contains
     !write(*,*) particles, sel(1)%x
     do n = 1, particles
       !write(*,*) sel(n)%e
-      write(units(n),40) sel(n)%x, sel(n)%y, sel(n)%z
+      write(units(n),50) sel(n)%x, sel(n)%y, sel(n)%z, &
+              sel(n)%u, sel(n)%v, sel(n)%w
     end do
 
     10   format (e17.10,",",e17.10,",",e17.10,",")
     30   format (e17.10,e17.10,e17.10)
     40   format (e17.10," ",e17.10," ",e17.10)
+    50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10)
     !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
 
@@ -225,14 +237,14 @@ contains
 
 
   subroutine radiusVelocity(m, a, e, i,omegaBIG, omega, rp, ra,mue, T )
-    real :: e, i, omegaBIG, omega, mue, T  
-    real*8 :: m, a, rp, ra
-    real :: tmue;
+    real :: e, i, omegaBIG, omega, mue  
+    real*8 :: m, a, rp, ra, T
+
     rp = (1-e)*a ! distance at perigee (m)
     ra = (1+e)*a ! distance at apogee (m)
-    tmue = gcu*(mass1+m) ! standard gravitational parameters
-    T = 2 * pi * (( (a**3) /tmue )**.5) ! Peroid
-    mue = tmue
+    mue = gcu*(mass1+m) ! standard gravitational parameters
+    T = 2 * pi * (( (a**3) /mue )**.5) ! Peroid
+    
   end subroutine radiusVelocity
 
 

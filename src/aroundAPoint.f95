@@ -9,7 +9,7 @@ Program aroundAPoint
    real*8 c, perCur
    real*8 :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
    real*8 :: startX, startY, startZ, r
-   type(particle), dimension(2) :: partarray
+   type(particle), dimension(10) :: partarray
    
    call execute_command_line("rm -f /mnt/kdrive/*.dat")
   
@@ -24,10 +24,12 @@ Program aroundAPoint
  
    ! get initial positions of particles
    do n = 1, particles
-     !write(*,*) "in loop", n ,particles
+     write(*,*) "Partical", n ,particles
      write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
-     open(newunit=units(n), file=filename, status="replace", action="write")
+     open(newunit=units(n), file=filename, status="replace", &
+         action="write")
      if( n > 1 ) call getpartparm(partarray(n)) 
+     write(*,*) " "
    end do
 
    !call printparticles(partarray, io, particles)

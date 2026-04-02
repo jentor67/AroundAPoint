@@ -26,8 +26,8 @@ contains
     write(*,*) "V tang", v 
 
     E = (b/a)**2
-    !F = ( (b**2) - E*(x**2) )**.5
-    F = ( E*(x**2) - (b**2) )**.5
+    F = ( (b**2) - E*(x**2) )**.5
+    !F = ( E*(x**2) - (b**2) )**.5
     !write(*,*) "F",F,b,E,x,(b-x)
 
     if( (x > 0) .and. (y == 0) ) then
