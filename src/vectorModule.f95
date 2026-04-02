@@ -23,7 +23,7 @@ contains
     real*8 :: vx1, vy1, vz1
     real*8 :: vx0, vy0, vz0= 0.0
    
-    write(*,*) "V tang", v 
+    !write(*,*) "V tang", v 
 
     E = (b/a)**2
     F = ( (b**2) - E*(x**2) )**.5

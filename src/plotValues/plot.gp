@@ -11,7 +11,7 @@ set xlabel 'X Axis'
 set ylabel 'Y Axis'
 set zlabel 'Z Axis'
 set grid
-lineCount=600000
+lineCount=315000
 
 # Plot data from a file named 'data.txt' using columns 1 and 2 with lines
 # plot 'data.txt' using 1:2 with lines title 'Dataset 1'
@@ -28,6 +28,8 @@ splot '/mnt/kdrive/file_00000001.dat' every ::0::lineCount with lines title "" ,
 '/mnt/kdrive/file_00000004.dat' every ::0::lineCount with lines title "", \
 '/mnt/kdrive/file_00000005.dat' every ::0::lineCount with lines title "", \
 '/mnt/kdrive/file_00000006.dat' every ::0::lineCount with lines title "", \
+'/mnt/kdrive/file_00000007.dat' every ::0::lineCount with lines title "", \
 '/mnt/kdrive/file_00000008.dat' every ::0::lineCount with lines title "", \
+'/mnt/kdrive/file_00000009.dat' every ::0::lineCount with lines title "", \
 '/mnt/kdrive/file_00000010.dat' every ::0::lineCount with lines title ""
 

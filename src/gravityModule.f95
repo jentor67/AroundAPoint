@@ -11,7 +11,7 @@ module gravityModule
   real*8 :: pie = 3.1415926535897932384626
   real*8 :: timedisp = 1 !.000001
   real*8 :: SOLARMASS = 1.989E30 !; // kg
-  real*8 :: mass1 = 10.0 ! = 1.989E30!; // kg
+  real*8 :: mass1 = 1000.0 ! = 1.989E30!; // kg
   !real*8 :: mass1 = 1.989E30!; // kg
 
   type particle
@@ -59,15 +59,15 @@ contains
     sel%a = randomSimiMajorAxis(5.0, 10.0)
     sel%b = sel%a*((1-(sel%e**2))**.5);
     sel%nue = randomTrueAnomaly() 
-    write(*,*) "Values",  sel%omega, sel%e, sel%i, sel%omegaBIG, &
-            sel%mass, sel%a, sel%b, sel%nue
+    !write(*,*) "Values",  sel%omega, sel%e, sel%i, sel%omegaBIG, &
+    !        sel%mass, sel%a, sel%b, sel%nue
 
     call radiusVelocity(sel%mass, sel%a, sel%e, sel%i, sel%omegaBIG, &
             sel%omega, rp, ra, sel%mue, T)
-    write(*,*) "After radiusVelocity", rp, ra, sel%mue, T
+    !write(*,*) "After radiusVelocity", rp, ra, sel%mue, T
 
     call startPointVelocity(sel,rp)
-    write(*,*) "After startPointVelocity",sel%u,sel%v,sel%w
+    write(*,*) "After startPointVelocity",sel%e,sel%u,sel%v,sel%w
     !write(*,*) "Velocity",a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, &
     !sel%y, sel%z, sel%u, sel%v, sel%w
     !write(*,*) "Velocity",sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
@@ -102,14 +102,14 @@ contains
 
     sel%v = ( (2*sel%mue/r) - (sel%mue/sel%a) )**.5
 
-    write(*,*) "v", sel%v
+    !write(*,*) "v", sel%v
 
     !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
     call tangentVectorEllipse(xp, sel%y, sel%a,sel%b, sel%v, ut, vt)
     !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
     sel%u = ut
     sel%v = vt
-    write(*,*) "v", sel%v
+    !write(*,*) "v", sel%v
 
 
     !// Rotate omega  degrees

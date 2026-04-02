@@ -14,7 +14,7 @@ Program aroundAPoint
    call execute_command_line("rm -f /mnt/kdrive/*.dat")
   
    iterations = 3600*24*365.25  ! one year
-   !iterations = 315360  ! 1 % one year
+   iterations = 315360  ! 1 % one year
    !iterations = 3  ! 1 % one year
    
    particles = size(partarray,dim=1)
@@ -87,9 +87,9 @@ Program aroundAPoint
    c = 2.0*pie*partarray(2)%a
 
    perCur = 100*r/c
-   write(*,*) startX, startY, startZ
-   write(*,*) partarray(2)%x,partarray(2)%y,partarray(2)%z
-   write(*,*) r, c, partarray(2)%a, perCur, pie
+   !write(*,*) startX, startY, startZ
+   !write(*,*) partarray(2)%x,partarray(2)%y,partarray(2)%z
+   !write(*,*) r, c, partarray(2)%a, perCur, pie
 
    ! print final values
    do n = 1, particles
