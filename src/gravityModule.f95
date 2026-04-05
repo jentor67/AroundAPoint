@@ -1,33 +1,34 @@
 !> \\file gravityModule.f95
 module gravityModule
-  use startParameters
+  use startParametersModule
   use vectorModule
+  use constantsModule
   implicit none
+
   public :: acceleration, distance
-  public :: valuetest, forcevector
-  public :: velocitychange,getpartparm, printparticle, printparticles
+  public :: valueLargeBody, forcevector
+  public :: velocitychange, getpartparm, printparticle, printparticles
+
   real :: mass 
-  real*8 :: gcu = 6.674083E-11
-  real*8 :: pie = 3.1415926535897932384626
-  real*8 :: timedisp = 1 !.000001
-  real*8 :: SOLARMASS = 1.989E30 !; // kg
-  real*8 :: mass1 = 1000.0 ! = 1.989E30!; // kg
-  !real*8 :: mass1 = 1.989E30!; // kg
+
+  real(kind=kind(1.0d0)) :: timedisp = 1 !.000001
+  real(kind=kind(1.0d0)) :: mass1 = 1000.0 ! = 1.989E30!; // kg
+  !real(kind=kind(1.0d0)) :: mass1 = 1.989E30!; // kg
 
   type particle
-    real*8 :: x
-    real*8 :: y
-    real*8 :: z
-    real*8 :: u
-    real*8 :: v
-    real*8 :: w
+    real(kind=kind(1.0d0)) :: x
+    real(kind=kind(1.0d0)) :: y
+    real(kind=kind(1.0d0)) :: z
+    real(kind=kind(1.0d0)) :: u
+    real(kind=kind(1.0d0)) :: v
+    real(kind=kind(1.0d0)) :: w
     real :: omega
     real :: e
     real :: i
     real :: omegaBIG
-    real*8 :: mass
-    real*8 :: a
-    real*8 :: b
+    real(kind=kind(1.0d0)) :: mass
+    real(kind=kind(1.0d0)) :: a
+    real(kind=kind(1.0d0)) :: b
     real :: nue
     real :: mue
   end type particle
@@ -38,8 +39,8 @@ contains
   subroutine getpartparm(sel)
     type(particle) sel
 
-    real*8 :: xt, yt, zt, ut, vt, wt, r, ra, rp, b
-    real*8 :: T
+    real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt, r, ra, rp, b
+    real(kind=kind(1.0d0)) :: T
 
     ! ***** Earth parameters *****
     !sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
@@ -51,26 +52,21 @@ contains
     !sel%b = sel%a*((1-(sel%e**2))**.5);
     !sel%nue = 357.5 !randomTrueAnomaly() 
 
-    sel%omega = randomArgumentOfPeriapsis()
-    sel%e = randomEccentricity() 
-    sel%i =  randomInclination() 
-    sel%omegaBIG = randomLongitudeOfAscendingNode()
+    sel%omega = randomArgumentOfPeriapsis(0.0, 360.0)
+    sel%e = randomEccentricity(0.0, 1.0) 
+    sel%i =  randomInclination(0.0, 360.0) 
+    sel%omegaBIG = randomLongitudeOfAscendingNode(0.0, 360.0)
     sel%mass = randomMass(.4, .6)
     sel%a = randomSimiMajorAxis(5.0, 10.0)
+    sel%nue = randomTrueAnomaly(0.0,360.0) 
+    
     sel%b = sel%a*((1-(sel%e**2))**.5);
-    sel%nue = randomTrueAnomaly() 
-    !write(*,*) "Values",  sel%omega, sel%e, sel%i, sel%omegaBIG, &
-    !        sel%mass, sel%a, sel%b, sel%nue
 
     call radiusVelocity(sel%mass, sel%a, sel%e, sel%i, sel%omegaBIG, &
             sel%omega, rp, ra, sel%mue, T)
-    !write(*,*) "After radiusVelocity", rp, ra, sel%mue, T
 
     call startPointVelocity(sel,rp)
     write(*,*) "After startPointVelocity",sel%e,sel%u,sel%v,sel%w
-    !write(*,*) "Velocity",a,e,nue,rp,omega,i,omegaBIG,mue,b,sel%x, &
-    !sel%y, sel%z, sel%u, sel%v, sel%w
-    !write(*,*) "Velocity",sel%x, sel%y, sel%z, sel%u, sel%v, sel%w
 
   end subroutine getpartparm
 
@@ -85,8 +81,8 @@ contains
 
   subroutine startPointVelocity(sel,rp)
     type(particle) sel
-    real*8 :: rp, rho, xp, r;
-    real*8 :: xt, yt, zt, ut, vt, wt;
+    real(kind=kind(1.0d0)) :: rp, rho, xp, r;
+    real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt;
 
     !// Rotate nue  degrees
     r = sel%a*(1-(sel%e**2))/(1+sel%e*cos(sel%nue/180*pie))
@@ -102,14 +98,10 @@ contains
 
     sel%v = ( (2*sel%mue/r) - (sel%mue/sel%a) )**.5
 
-    !write(*,*) "v", sel%v
 
-    !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
     call tangentVectorEllipse(xp, sel%y, sel%a,sel%b, sel%v, ut, vt)
-    !write(*,*) "tangentVenctor",xp, sel%y, sel%a, sel%b, sel%v, ut, vt
     sel%u = ut
     sel%v = vt
-    !write(*,*) "v", sel%v
 
 
     !// Rotate omega  degrees
@@ -145,22 +137,18 @@ contains
 
 
   subroutine velocitychange(sel, fx, fy, fz)
-    real*8 :: fx, fy, fz, masstime
+    real(kind=kind(1.0d0)) :: fx, fy, fz, masstime
     type(particle) sel 
 
     masstime = timedisp/sel%mass
 
-    !write(*,*) "Mass",sel%mass
-
-    !write(*,*) "Speed Old:", sel%u, sel%v, sel%w, fx, fy, fz
     sel%u = sel%u+fx*masstime
     sel%v = sel%v+fy*masstime
     sel%w = sel%w+fz*masstime
-    !write(*,*) "Speed new:", sel%u, sel%v, sel%w, fx, fy, fz
   end subroutine velocitychange
 
 
-  subroutine valuetest(sel)
+  subroutine valueLargeBody(sel)
     type(particle) sel
     sel%x=0
     sel%y=0
@@ -169,11 +157,11 @@ contains
     sel%v=0
     sel%w=0
     sel%mass=mass1
-  end subroutine valuetest
+  end subroutine valueLargeBody
 
 
   function acceleration(m,r) result(grav) 
-    real*8 :: grav, m, r
+    real(kind=kind(1.0d0)) :: grav, m, r
 
     grav = gcu*m/(r**2)
   end function 
@@ -181,7 +169,7 @@ contains
 
   function distance(a, b) result(r) 
     type(particle) a, b
-    real*8 :: r  ! good
+    real(kind=kind(1.0d0)) :: r  ! good
 
     !write(*,*) "TEST",b%x, r
 
@@ -191,7 +179,7 @@ contains
 
 
   subroutine forcevector(a, b, fx, fy, fz) 
-    real*8 :: fx, fy, fz, dis1,force, constant
+    real(kind=kind(1.0d0)) :: fx, fy, fz, dis1,force, constant
     type(particle) a, b
 
     dis1 = distance(a,b)
@@ -238,12 +226,12 @@ contains
 
   subroutine radiusVelocity(m, a, e, i,omegaBIG, omega, rp, ra,mue, T )
     real :: e, i, omegaBIG, omega, mue  
-    real*8 :: m, a, rp, ra, T
+    real(kind=kind(1.0d0)) :: m, a, rp, ra, T
 
     rp = (1-e)*a ! distance at perigee (m)
     ra = (1+e)*a ! distance at apogee (m)
     mue = gcu*(mass1+m) ! standard gravitational parameters
-    T = 2 * pi * (( (a**3) /mue )**.5) ! Peroid
+    T = 2 * pie * (( (a**3) /mue )**.5) ! Peroid
     
   end subroutine radiusVelocity
 

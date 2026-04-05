@@ -1,27 +1,28 @@
 !> \\file vectorModule.f95
 module vectorModule
+  use constantsModule
   implicit none
+
   public rotate2D, tangentVectorEllipse, unitVector, Vector
 
-  real :: pi = 4.0 * ATAN(1.0)
 
 contains
 
   subroutine rotate2D(x, y, angle, x0, y0)
     real :: angle
-    real*8 :: x, y, x0, y0
+    real(kind=kind(1.0d0)) :: x, y, x0, y0
 
     !//  angle will be in degrees
-    x0 = x*cos(angle/180*pi) - y*sin(angle/180*pi)
-    y0 = x*sin(angle/180*pi) + y*cos(angle/180*pi)
+    x0 = x*cos(angle/180*pie) - y*sin(angle/180*pie)
+    y0 = x*sin(angle/180*pie) + y*cos(angle/180*pie)
 
   end subroutine rotate2D 
 
   subroutine tangentVectorEllipse(x, y, a, b, v, vx, vy)
-    real*8 :: x, y, a, b, v, vx, vy
-    real*8 :: E, F, D, slope
-    real*8 :: vx1, vy1, vz1
-    real*8 :: vx0, vy0, vz0= 0.0
+    real(kind=kind(1.0d0)) :: x, y, a, b, v, vx, vy
+    real(kind=kind(1.0d0)) :: E, F, D, slope
+    real(kind=kind(1.0d0)) :: vx1, vy1, vz1
+    real(kind=kind(1.0d0)) :: vx0, vy0, vz0= 0.0
    
     !write(*,*) "V tang", v 
 
@@ -61,7 +62,7 @@ contains
   end subroutine tangentVectorEllipse
 
   subroutine Vector(x1,  y1,  z1,  x2, y2,  z2,  x,  y,  z)
-    real*8 :: x1,  y1,  z1,  x2, y2,  z2,  x,  y,  z
+    real(kind=kind(1.0d0)) :: x1,  y1,  z1,  x2, y2,  z2,  x,  y,  z
   
     x = x2 - x1
     y = y2 - y1
@@ -69,8 +70,8 @@ contains
   end subroutine Vector  
   
   subroutine unitVector(vx, vy, vz, ux, uy, uz)
-      real*8 :: vx, vy, vz, ux, uy, uz
-      real*8 :: v
+      real(kind=kind(1.0d0)) :: vx, vy, vz, ux, uy, uz
+      real(kind=kind(1.0d0)) :: v
 
       v = ( (vx**2) + (vy**2) + (vz**2) )**.5 
       ux = vx/v

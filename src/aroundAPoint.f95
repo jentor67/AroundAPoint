@@ -1,44 +1,53 @@
 !> \\file aroundAPoint.f
 Program aroundAPoint
    use gravityModule
-   use startParameters 
+   use startParametersModule
+   use constantsModule
    implicit none
-   integer, dimension(100000) :: units
+
    character(len=100) :: filename
+   character(len=100) :: arg
+
+   !integer, dimension(100000) :: units
+   integer :: units(100000)
    integer :: n, m, k, particles, iterations, io
-   real*8 c, perCur
-   real*8 :: force, gravity, fx, fy, fz, fxsum, fysum, fzsum, distpart
-   real*8 :: startX, startY, startZ, r
+
+   real(kind=kind(1.0d0)) :: c, perCur
+   real(kind=kind(1.0d0)) :: force, gravity, r
+   real(kind=kind(1.0d0)) :: fx, fy, fz
+   real(kind=kind(1.0d0)) :: fxsum, fysum, fzsum
+   real(kind=kind(1.0d0)) :: startX, startY, startZ
+   real(kind=kind(1.0d0)) :: distpart
+
+
+   !call get_command_argument(1, arg)
+
+   !n = command_argument_count()
+
+   !write(*,*) "Arguments: ", n
+
    type(particle), dimension(10) :: partarray
-   
-   call execute_command_line("rm -f /mnt/kdrive/*.dat")
+  
+   !call execute_command_line("rm -f /mnt/kdrive/*.dat")
   
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year
    !iterations = 3  ! 1 % one year
    
    particles = size(partarray,dim=1)
-   !write(*,*) particles
-   call valuetest(partarray(1))
-   !write(*,*) partarray(1)%x
+
+   call valueLargeBody(partarray(1))
  
    ! get initial positions of particles
    do n = 1, particles
      write(*,*) "Partical", n ,particles
      write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
-     open(newunit=units(n), file=filename, status="replace", &
-         action="write")
+     !open(newunit=units(n), file=filename, status='replace', action='write')
+     open(newunit=n, file=filename, status='replace', action='write')
      if( n > 1 ) call getpartparm(partarray(n)) 
      write(*,*) " "
    end do
 
-   !call printparticles(partarray, io, particles)
-   
-   !write(*,*) "Before loop",particles
-   !open(newunit=io, file="/mnt/kdrive/data.txt",status="replace", action="write")
-
-   !write(*,*) " "
-   !write(*,*) " "
    ! print initial values
    do n = 1, particles
      call printparticle( n, partarray(n) )
@@ -47,12 +56,8 @@ Program aroundAPoint
    startX = partarray(2)%x
    startY = partarray(2)%y
    startZ = partarray(2)%z
-   !write(*,*) " "
    write(*,*) "Start of Iterations"
    do n = 1, iterations
-     !write(*,*) "Iteration---------------------------------------:", n
-     !write(*,*) "Test loop",particles
-     !call printparticles(partarray, units(n), particles)
      call printparticles(partarray, units, particles)
      do m = 1, particles
        fxsum = 0
@@ -64,20 +69,11 @@ Program aroundAPoint
            fxsum = fxsum + fx
            fysum = fysum + fy
            fzsum = fzsum + fz
-           !write(*,*) "Partical Force:",k, fxsum, fysum, fzsum
          end if
        end do
-       !write(*,*) "Part",m
-       !write(*,*) "Force:",fxsum, fysum, fzsum
-       !write(*,*) "Loc:", partarray(m)%x,partarray(m)%y,partarray(m)%z
-       !write(*,*) "Spd:", partarray(m)%u,partarray(m)%v,partarray(m)%w
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
-       !write(*,*) " "
      end do
-     !call printparticles(partarray, io, particles)
-     !call printparticle(1, partarray(n+1,1))
-     !call printparticle(2, partarray(n+1,2))
    end do
    write(*,*) "End of Iterations"
 
@@ -87,18 +83,12 @@ Program aroundAPoint
    c = 2.0*pie*partarray(2)%a
 
    perCur = 100*r/c
-   !write(*,*) startX, startY, startZ
-   !write(*,*) partarray(2)%x,partarray(2)%y,partarray(2)%z
-   !write(*,*) r, c, partarray(2)%a, perCur, pie
 
    ! print final values
    do n = 1, particles
      call printparticle( n, partarray(n) )
    end do
 
-   !write(*,*) io
-   !close(io)
-   !write(*,*) io
 
    do n = 1, particles
       close(units(n))

@@ -1,5 +1,5 @@
 !> \\file startParameters.f95
-module startParameters
+module startParametersModule
   implicit none
   public :: randomArgumentOfPeriapsis
   public :: randomEccentricity 
@@ -11,29 +11,55 @@ module startParameters
 contains
 
   ! finds a random values between 0 and 360 degrees
-  function randomArgumentOfPeriapsis() result(omega)
-    real :: omega
+  function randomArgumentOfPeriapsis(min, max) result(omega)
+    real :: omega, min, max, diff
+
+    diff = max - min
+
     call random_number(omega)
-    omega = omega*360
+
+    omega = omega*diff
+    omega = min + omega
+
   end function
 
-  function randomEccentricity() result(e)
-    real :: e
+  ! finds a randomn values between 0 and 1
+  function randomEccentricity(min, max) result(e)
+    real :: e, min, max, diff
+
+    diff = max - min
+
     call random_number(e)
+
+    e = e*diff
+    e = min + e
+
   end function 
 
   ! finds a random values between 0 and 360 degrees
-  function randomInclination() result(inclination)
-    real :: inclination
+  function randomInclination(min, max) result(inclination)
+    real :: inclination, min, max, diff
+
+    diff = max - min
+
     call random_number(inclination)
-    inclination = inclination*360
+
+    inclination = inclination*diff
+    inclination = min + inclination
+
   end function
 
   ! finds a random values between 0 and 360 degrees
-  function randomLongitudeOfAscendingNode() result(OMEGA)
-    real :: OMEGA
+  function randomLongitudeOfAscendingNode(min, max) result(OMEGA)
+    real :: OMEGA, min, max, diff
+    
+    diff = max - min
+
     call random_number(OMEGA)
-    OMEGA = OMEGA*360
+    
+    OMEGA = OMEGA*diff
+    OMEGA = min+OMEGA
+
   end function
 
   ! determine the mass
@@ -64,14 +90,16 @@ contains
   end function
 
   ! finds a random values between 0 and 360 degrees
-  function randomTrueAnomaly() result(nue)
-    real :: nue
+  function randomTrueAnomaly(min, max) result(nue)
+    real :: nue, min, max, diff
+
+    diff = max - min
 
     call random_number(nue)
 
-    nue = nue*360
+    nue = nue*diff
+    nue = min+nue
 
   end function
 
-end module startParameters
-
+end module startParametersModule
