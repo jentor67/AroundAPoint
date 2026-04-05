@@ -1,5 +1,5 @@
 !> \\file constantsModule.f95
-module constantsModule
+module constantsmodule
   implicit none
 
   !real*8 :: gcu = 6.674083E-11
@@ -13,4 +13,5 @@ contains
     integer :: t
     t=3
   end function john
-end module constantsModule
+
+end module constantsmodule

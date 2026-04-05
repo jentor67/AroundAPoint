@@ -1,5 +1,5 @@
 !> \\file startParameters.f95
-module startParametersModule
+module startparametersmodule
   implicit none
   public :: randomArgumentOfPeriapsis
   public :: randomEccentricity 
@@ -102,4 +102,4 @@ contains
 
   end function
 
-end module startParametersModule
+end module startparametersmodule

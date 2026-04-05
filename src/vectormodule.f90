@@ -1,6 +1,6 @@
 !> \\file vectorModule.f95
-module vectorModule
-  use constantsModule
+module vectormodule
+  use constantsmodule
   implicit none
 
   public rotate2D, tangentVectorEllipse, unitVector, Vector
@@ -81,5 +81,5 @@ contains
   end subroutine unitVector
 
 
-end module vectorModule
+end module vectormodule
 

@@ -1,8 +1,8 @@
 !> \\file gravityModule.f95
-module gravityModule
-  use startParametersModule
-  use vectorModule
-  use constantsModule
+module gravitymodule
+  use startparametersmodule
+  use vectormodule
+  use constantsmodule
   implicit none
 
   public :: acceleration, distance
@@ -236,5 +236,5 @@ contains
   end subroutine radiusVelocity
 
 
-end module gravityModule
+end module gravitymodule
 

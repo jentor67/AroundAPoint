@@ -1,16 +1,17 @@
-!> \\file aroundAPoint.f
-Program aroundAPoint
-   use gravityModule
-   use startParametersModule
-   use constantsModule
+!> \\file main.f95
+Program main
+   use startparametersmodule
+   use constantsmodule
+   use gravitymodule
    implicit none
 
    character(len=100) :: filename
    character(len=100) :: arg
 
    !integer, dimension(100000) :: units
-   integer :: units(100000)
-   integer :: n, m, k, particles, iterations, io
+   !integer :: units(100000)
+   integer, allocatable :: units(:)
+   integer :: n, m, k, particles, iterations, io, stat, temp_id
 
    real(kind=kind(1.0d0)) :: c, perCur
    real(kind=kind(1.0d0)) :: force, gravity, r
@@ -38,13 +39,25 @@ Program aroundAPoint
 
    call valueLargeBody(partarray(1))
  
+   allocate(units(10))
+
    ! get initial positions of particles
    do n = 1, particles
      write(*,*) "Partical", n ,particles
      write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
-     !open(newunit=units(n), file=filename, status='replace', action='write')
-     open(newunit=n, file=filename, status='replace', action='write')
+
+     open(newunit=temp_id, file=filename, status='replace', &
+             action='write', iostat=stat)
+
+     if (stat /= 0) then
+        print *, "Error opening file, iostat = ", stat
+        stop
+     end if
+
+     units(n) = temp_id
+
      if( n > 1 ) call getpartparm(partarray(n)) 
+
      write(*,*) " "
    end do
 
@@ -93,4 +106,4 @@ Program aroundAPoint
    do n = 1, particles
       close(units(n))
    end do
-End Program aroundAPoint
+End Program main
