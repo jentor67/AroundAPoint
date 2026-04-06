@@ -39,7 +39,7 @@ contains
   subroutine getpartparm(sel)
     type(particle) sel
 
-    real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt, r, ra, rp, b
+    real(kind=kind(1.0d0)) :: ra, rp
     real(kind=kind(1.0d0)) :: T
 
     ! ***** Earth parameters *****
@@ -62,8 +62,8 @@ contains
     
     sel%b = sel%a*((1-(sel%e**2))**.5);
 
-    call radiusVelocity(sel%mass, sel%a, sel%e, sel%i, sel%omegaBIG, &
-            sel%omega, rp, ra, sel%mue, T)
+    call radiusVelocity(sel%mass, sel%a, sel%e, &
+            rp, ra, sel%mue, T)
 
     call startPointVelocity(sel,rp)
     write(*,*) "After startPointVelocity",sel%e,sel%u,sel%v,sel%w
@@ -210,22 +210,26 @@ contains
               sel(n)%u, sel(n)%v, sel(n)%w
     end do
 
-    10   format (e17.10,",",e17.10,",",e17.10,",")
-    30   format (e17.10,e17.10,e17.10)
-    40   format (e17.10," ",e17.10," ",e17.10)
-    50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10)
+    !10   format (e17.10,",",e17.10,",",e17.10,",")
+    !30   format (e17.10,e17.10,e17.10)
+    !40   format (e17.10," ",e17.10," ",e17.10)
+    50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10, &
+            " ",e17.10)
     !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
 
   subroutine printparticle(i, sel)
     integer :: i
     type(particle) sel
-    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, sel%mass
+
+    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, &
+    !        sel%mass
+
   end subroutine printparticle
 
 
-  subroutine radiusVelocity(m, a, e, i,omegaBIG, omega, rp, ra,mue, T )
-    real :: e, i, omegaBIG, omega, mue  
+  subroutine radiusVelocity(m, a, e, rp, ra,mue, T)
+    real :: e, mue  
     real(kind=kind(1.0d0)) :: m, a, rp, ra, T
 
     rp = (1-e)*a ! distance at perigee (m)

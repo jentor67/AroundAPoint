@@ -6,19 +6,18 @@ Program main
    implicit none
 
    character(len=100) :: filename
-   character(len=100) :: arg
+   !character(len=100) :: arg
 
    !integer, dimension(100000) :: units
    !integer :: units(100000)
    integer, allocatable :: units(:)
-   integer :: n, m, k, particles, iterations, io, stat, temp_id
+   integer :: n, m, k, particles, iterations, stat, temp_id
 
    real(kind=kind(1.0d0)) :: c, perCur
-   real(kind=kind(1.0d0)) :: force, gravity, r
+   real(kind=kind(1.0d0)) :: r
    real(kind=kind(1.0d0)) :: fx, fy, fz
    real(kind=kind(1.0d0)) :: fxsum, fysum, fzsum
    real(kind=kind(1.0d0)) :: startX, startY, startZ
-   real(kind=kind(1.0d0)) :: distpart
 
 
    !call get_command_argument(1, arg)
@@ -33,7 +32,7 @@ Program main
   
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year
-   !iterations = 3  ! 1 % one year
+   iterations = 3  ! 1 % one year
    
    particles = size(partarray,dim=1)
 
@@ -43,7 +42,6 @@ Program main
 
    ! get initial positions of particles
    do n = 1, particles
-     write(*,*) "Partical", n ,particles
      write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
 
      open(newunit=temp_id, file=filename, status='replace', &
@@ -57,6 +55,11 @@ Program main
      units(n) = temp_id
 
      if( n > 1 ) call getpartparm(partarray(n)) 
+
+     write(*,*) "Partical", n, particles, partarray(n)%omega, &
+         partarray(n)%e, partarray(n)%i, partarray(n)%omegaBIG, &
+         partarray(n)%mass, partarray(n)%a, partarray(n)%b, &
+         partarray(n)%nue, partarray(n)%mue
 
      write(*,*) " "
    end do

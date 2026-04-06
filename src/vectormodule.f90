@@ -20,7 +20,7 @@ contains
 
   subroutine tangentVectorEllipse(x, y, a, b, v, vx, vy)
     real(kind=kind(1.0d0)) :: x, y, a, b, v, vx, vy
-    real(kind=kind(1.0d0)) :: E, F, D, slope
+    real(kind=kind(1.0d0)) :: E, F
     real(kind=kind(1.0d0)) :: vx1, vy1, vz1
     real(kind=kind(1.0d0)) :: vx0, vy0, vz0= 0.0
    
