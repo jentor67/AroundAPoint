@@ -222,8 +222,8 @@ contains
     integer :: i
     type(particle) sel
 
-    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, &
-    !        sel%mass
+    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, &
+            sel%mass
 
   end subroutine printparticle
 
@@ -234,7 +234,7 @@ contains
 
     rp = (1-e)*a ! distance at perigee (m)
     ra = (1+e)*a ! distance at apogee (m)
-    mue = gcu*(mass1+m) ! standard gravitational parameters
+    mue = real(gcu*(mass1+m),kind=4) ! standard gravitational parameters
     T = 2 * pie * (( (a**3) /mue )**.5) ! Peroid
     
   end subroutine radiusVelocity

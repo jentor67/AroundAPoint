@@ -1,12 +1,13 @@
 !> \\file main.f95
 Program main
+   use readconfigmodule
    use startparametersmodule
    use constantsmodule
    use gravitymodule
    implicit none
 
    character(len=100) :: filename
-   !character(len=100) :: arg
+   character(len=256) :: config_file_path
 
    !integer, dimension(100000) :: units
    !integer :: units(100000)
@@ -20,15 +21,23 @@ Program main
    real(kind=kind(1.0d0)) :: startX, startY, startZ
 
 
-   !call get_command_argument(1, arg)
-
-   !n = command_argument_count()
-
-   !write(*,*) "Arguments: ", n
-
    type(particle), dimension(10) :: partarray
-  
-   !call execute_command_line("rm -f /mnt/kdrive/*.dat")
+ 
+
+   !************************************************* 
+   
+   ! clear working data
+   call execute_command_line("rm -f /mnt/kdrive/*.dat")
+
+   ! Get config file
+   n = command_argument_count()
+   print *, "Number of arguments:", n 
+   call get_command_argument(1, config_file_path)
+   config_file_path = trim(config_file_path)
+   print *, "Config File: ", config_file_path
+   
+
+   call read_config_file(config_file_path)
   
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year
