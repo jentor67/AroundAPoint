@@ -6,7 +6,7 @@ module startparametersmodule
   public :: randomInclination 
   public :: randomLongitudeOfAscendingNode 
   public :: randomMass 
-  public :: randomSimiMajorAxis 
+  public :: randomSemiMajorAxis 
   public :: randomTrueAnomaly 
 contains
 
@@ -64,7 +64,7 @@ contains
 
   ! determine the mass
   function randomMass(min, max) result(m)
-    real :: m, min, max, diff
+    real(kind=kind(1.0d0)) :: m, min, max, diff
 
     diff = max - min
 
@@ -76,9 +76,8 @@ contains
   end function 
 
   !  determine the semi-major axis
-  function randomSimiMajorAxis(min, max) result(a)
-    real :: a
-    real :: diff, max, min
+  function randomSemiMajorAxis(min, max) result(a)
+    real(kind=kind(1.0d0)) :: a, min, max, diff
     
     diff = max - min
 

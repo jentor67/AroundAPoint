@@ -3,6 +3,7 @@ module gravitymodule
   use startparametersmodule
   use vectormodule
   use constantsmodule
+  use readconfigmodule
   implicit none
 
   public :: acceleration, distance
@@ -36,7 +37,8 @@ module gravitymodule
 
 contains
 
-  subroutine getpartparm(sel)
+  subroutine getpartparm(sel, cf)
+    type(boundaryconditions) :: cf
     type(particle) sel
 
     real(kind=kind(1.0d0)) :: ra, rp
@@ -52,13 +54,14 @@ contains
     !sel%b = sel%a*((1-(sel%e**2))**.5);
     !sel%nue = 357.5 !randomTrueAnomaly() 
 
-    sel%omega = randomArgumentOfPeriapsis(0.0, 360.0)
-    sel%e = randomEccentricity(0.0, 1.0) 
-    sel%i =  randomInclination(0.0, 360.0) 
-    sel%omegaBIG = randomLongitudeOfAscendingNode(0.0, 360.0)
-    sel%mass = randomMass(.4, .6)
-    sel%a = randomSimiMajorAxis(5.0, 10.0)
-    sel%nue = randomTrueAnomaly(0.0,360.0) 
+    sel%omega = randomArgumentOfPeriapsis(cf%omega_min, cf%omega_max)
+    sel%e = randomEccentricity(cf%e_min, cf%e_max)
+    sel%i =  randomInclination(cf%i_min, cf%i_max)
+    sel%omegaBIG = randomLongitudeOfAscendingNode(cf%omegabig_min, &
+            cf%omegabig_max)
+    sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
+    sel%a = randomSemiMajorAxis(cf%a_min, cf%a_max)
+    sel%nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
     
     sel%b = sel%a*((1-(sel%e**2))**.5);
 
@@ -148,7 +151,8 @@ contains
   end subroutine velocitychange
 
 
-  subroutine valueLargeBody(sel)
+  subroutine valueLargeBody(sel,cf)
+    type(boundaryconditions) :: cf
     type(particle) sel
     sel%x=0
     sel%y=0
@@ -156,7 +160,7 @@ contains
     sel%u=0
     sel%v=0
     sel%w=0
-    sel%mass=mass1
+    sel%mass=cf%CenterMass
   end subroutine valueLargeBody
 
 

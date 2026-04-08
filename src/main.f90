@@ -21,7 +21,7 @@ Program main
    real(kind=kind(1.0d0)) :: startX, startY, startZ
 
 
-   type(particle), dimension(10) :: partarray
+   type(particle), dimension(1000000) :: partarray
  
 
    !************************************************* 
@@ -38,14 +38,17 @@ Program main
    
 
    call read_config_file(config_file_path)
-  
+
+
+   write(*,*) bc%CenterMass
+
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year
    iterations = 3  ! 1 % one year
    
-   particles = size(partarray,dim=1)
+   particles = bc%ObjectCount !size(partarray,dim=1)
 
-   call valueLargeBody(partarray(1))
+   call valueLargeBody(partarray(1),bc)
  
    allocate(units(10))
 
@@ -63,7 +66,7 @@ Program main
 
      units(n) = temp_id
 
-     if( n > 1 ) call getpartparm(partarray(n)) 
+     if( n > 1 ) call getpartparm(partarray(n),bc) 
 
      write(*,*) "Partical", n, particles, partarray(n)%omega, &
          partarray(n)%e, partarray(n)%i, partarray(n)%omegaBIG, &
@@ -82,7 +85,7 @@ Program main
    startY = partarray(2)%y
    startZ = partarray(2)%z
    write(*,*) "Start of Iterations"
-   do n = 1, iterations
+   do n = 1, bc%Iterations
      call printparticles(partarray, units, particles)
      do m = 1, particles
        fxsum = 0
