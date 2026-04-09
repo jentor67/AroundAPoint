@@ -20,7 +20,7 @@ Program main
    real(kind=kind(1.0d0)) :: fxsum, fysum, fzsum
    real(kind=kind(1.0d0)) :: startX, startY, startZ
 
-
+   ! set 1,000,000 array
    type(particle), dimension(1000000) :: partarray
  
 
@@ -34,13 +34,17 @@ Program main
    print *, "Number of arguments:", n 
    call get_command_argument(1, config_file_path)
    config_file_path = trim(config_file_path)
-   print *, "Config File: ", config_file_path
+   print *, "Config File: ", config_file_path, len_trim(config_file_path)
    
+   if( len_trim(config_file_path) == 0) then
+           print *,"No name for config file"
+           stop
+   end if
 
    call read_config_file(config_file_path)
 
 
-   write(*,*) bc%CenterMass
+   !write(*,*) bc%CenterMass
 
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year
@@ -68,12 +72,12 @@ Program main
 
      if( n > 1 ) call getpartparm(partarray(n),bc) 
 
-     write(*,*) "Partical", n, particles, partarray(n)%omega, &
-         partarray(n)%e, partarray(n)%i, partarray(n)%omegaBIG, &
-         partarray(n)%mass, partarray(n)%a, partarray(n)%b, &
-         partarray(n)%nue, partarray(n)%mue
+     !write(*,*) "Partical", n, particles, partarray(n)%omega, &
+     !    partarray(n)%e, partarray(n)%i, partarray(n)%omegaBIG, &
+     !    partarray(n)%mass, partarray(n)%a, partarray(n)%b, &
+     !    partarray(n)%nue, partarray(n)%mue
 
-     write(*,*) " "
+     !write(*,*) " "
    end do
 
    ! print initial values

@@ -54,19 +54,67 @@ contains
     !sel%b = sel%a*((1-(sel%e**2))**.5);
     !sel%nue = 357.5 !randomTrueAnomaly() 
 
-    sel%omega = randomArgumentOfPeriapsis(cf%omega_min, cf%omega_max)
-    sel%e = randomEccentricity(cf%e_min, cf%e_max)
-    sel%i =  randomInclination(cf%i_min, cf%i_max)
-    sel%omegaBIG = randomLongitudeOfAscendingNode(cf%omegabig_min, &
-            cf%omegabig_max)
-    sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
-    sel%a = randomSemiMajorAxis(cf%a_min, cf%a_max)
-    sel%nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
+    ! test if Argument of Periapsis is greater than -9999.9
+    if( cf%omega > -9999.9 ) then
+            sel%omega = cf%omega
+    else
+            sel%omega = randomArgumentOfPeriapsis(cf%omega_min, &
+                    cf%omega_max)
+    end if
+
+    ! test if Eccentricity > -9999.9
+    if( cf%e > -9999.9 ) then
+            sel%e = cf%e
+    else
+            sel%e = randomEccentricity(cf%e_min, cf%e_max)
+    end if
+
+    ! test if Inclination > -9999.9
+    if( cf%i > -9999.9 ) then
+            sel%i = cf%i
+    else
+            sel%i =  randomInclination(cf%i_min, cf%i_max)
+    end if
+
+    ! test if Logitude of Ascending Node is > -9999.9
+    if( cf%omegaBIG > -9999.9 ) then
+            sel%omegaBIG = cf%omegaBIG
+    else
+            sel%omegaBIG = randomLongitudeOfAscendingNode( &
+                    cf%omegabig_min, cf%omegabig_max)
+    end if
+
+    ! test if given a single mass
+    if(cf%ObjectMass > -9999.9 ) then
+            sel%mass = cf%ObjectMass
+    else
+            sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
+    end if
+ 
+    ! test if given a sigle SemiMajorAxis
+    if( cf%a > -9999.9 ) then
+            sel%a = cf%a
+    else
+            sel%a = randomSemiMajorAxis(cf%a_min, cf%a_max)
+    end if
+
+    ! test if given a single True Anomaly
+    if( cf%nue > -9999.9) then
+            sel%nue = cf%nue
+    else
+            sel%nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
+    end if
     
+    write(*,*) "Parameters: ",sel%omega, sel%e, sel%i, sel%omegaBIG, &
+            sel%mass, sel%a, sel%nue
+
     sel%b = sel%a*((1-(sel%e**2))**.5);
 
     call radiusVelocity(sel%mass, sel%a, sel%e, &
             rp, ra, sel%mue, T)
+
+    write(*,*) "After radiusVelocity: ",sel%mass, sel%a, sel%e, &
+            rp, ra, sel%mue, T
 
     call startPointVelocity(sel,rp)
     write(*,*) "After startPointVelocity",sel%e,sel%u,sel%v,sel%w
