@@ -44,7 +44,7 @@ Program main
    call read_config_file(config_file_path)
 
 
-   !write(*,*) bc%CenterMass
+   centerMass =  bc%CenterMass
 
    iterations = 3600*24*365.25  ! one year
    iterations = 315360  ! 1 % one year

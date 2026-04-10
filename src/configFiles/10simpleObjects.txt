@@ -1,11 +1,11 @@
 a_min 5
 a_max 10
-CenterMass 50
-e_min .9
+CenterMass 500
+e_min 0
 e_max 1
 i_min 0
-i_max 2
-Iterations 100000
+i_max 360
+Iterations 1000000
 nue_min 0
 nue_max 360
 ObjectCount 10

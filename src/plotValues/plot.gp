@@ -11,7 +11,7 @@ set xlabel 'X Axis'
 set ylabel 'Y Axis'
 set zlabel 'Z Axis'
 set grid
-lineCount=315000
+lineCount=10000000
 
 # Plot data from a file named 'data.txt' using columns 1 and 2 with lines
 # plot 'data.txt' using 1:2 with lines title 'Dataset 1'

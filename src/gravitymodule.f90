@@ -13,7 +13,7 @@ module gravitymodule
   real :: mass 
 
   real(kind=kind(1.0d0)) :: timedisp = 1 !.000001
-  real(kind=kind(1.0d0)) :: mass1 = 1000.0 ! = 1.989E30!; // kg
+  real(kind=kind(1.0d0)) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
   !real(kind=kind(1.0d0)) :: mass1 = 1.989E30!; // kg
 
   type particle
@@ -110,14 +110,14 @@ contains
 
     sel%b = sel%a*((1-(sel%e**2))**.5);
 
-    call radiusVelocity(sel%mass, sel%a, sel%e, &
-            rp, ra, sel%mue, T)
+    !call radiusVelocity(sel%mass, sel%a, sel%e, &
+    !        rp, ra, sel%mue, T)
+    call radiusVelocity(rp, ra, T, sel)
 
-    write(*,*) "After radiusVelocity: ",sel%mass, sel%a, sel%e, &
-            rp, ra, sel%mue, T
+    write(*,*) "After radiusVelocity: ", rp, ra, sel%mue, T
 
     call startPointVelocity(sel,rp)
-    write(*,*) "After startPointVelocity",sel%e,sel%u,sel%v,sel%w
+    write(*,*) "After startPointVelocity",sel%u, sel%v, sel%w
 
   end subroutine getpartparm
 
@@ -240,8 +240,7 @@ contains
     force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     
     constant = force/dis1
-    !write(*,*) "Corridinates:",a%x, a%y, a%z, b%x, b%y, b%z, dis1, &
-    !force, constant
+
     fx = constant*(b%x-a%x)
     fy = constant*(b%y-a%y)
     fz = constant*(b%z-a%z)
@@ -257,7 +256,6 @@ contains
     
     !write(*,*) particles, sel(1)%x
     do n = 1, particles
-      !write(*,*) sel(n)%e
       write(units(n),50) sel(n)%x, sel(n)%y, sel(n)%z, &
               sel(n)%u, sel(n)%v, sel(n)%w
     end do
@@ -280,14 +278,17 @@ contains
   end subroutine printparticle
 
 
-  subroutine radiusVelocity(m, a, e, rp, ra,mue, T)
-    real :: e, mue  
-    real(kind=kind(1.0d0)) :: m, a, rp, ra, T
+  subroutine radiusVelocity(rp, ra, T, sel)
+    type(particle) sel
+    real(kind=kind(1.0d0)) :: rp, ra, T
 
-    rp = (1-e)*a ! distance at perigee (m)
-    ra = (1+e)*a ! distance at apogee (m)
-    mue = real(gcu*(mass1+m),kind=4) ! standard gravitational parameters
-    T = 2 * pie * (( (a**3) /mue )**.5) ! Peroid
+    rp = (1-sel%e)*sel%a ! distance at perigee (m)
+
+    ra = (1+sel%e)*sel%a ! distance at apogee (m)
+
+    sel%mue = real(gcu*(centerMass+sel%mass),kind=4) ! standard gravitational parameters
+
+    T = 2 * pie * (( (sel%a**3) /sel%mue )**.5) ! Peroid
     
   end subroutine radiusVelocity
 
