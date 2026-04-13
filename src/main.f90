@@ -67,7 +67,8 @@ Program main
         print *, "Error opening file, iostat = ", stat
         stop
      end if
-
+     
+     write(temp_id,'(A)') "frame|x|y|z|u|v|w"
      units(n) = temp_id
 
      if( n > 1 ) call getpartparm(partarray(n),bc) 
@@ -90,7 +91,7 @@ Program main
    startZ = partarray(2)%z
    write(*,*) "Start of Iterations"
    do n = 1, bc%Iterations
-     call printparticles(partarray, units, particles)
+     call printparticles(n, partarray, units, particles)
      do m = 1, particles
        fxsum = 0
        fysum = 0

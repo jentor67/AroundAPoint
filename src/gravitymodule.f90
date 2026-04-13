@@ -249,22 +249,24 @@ contains
 
 
   !subroutine printparticles(sel, io, particles)
-  subroutine printparticles(sel, units, particles)
+  subroutine printparticles(iteration, sel, units, particles)
     integer, intent(inout) :: units(:)
-    integer :: n, particles
+    integer :: n, particles, iteration
     type(particle) sel(particles)
     
     !write(*,*) particles, sel(1)%x
     do n = 1, particles
-      write(units(n),50) sel(n)%x, sel(n)%y, sel(n)%z, &
+      write(units(n),60) iteration, sel(n)%x, sel(n)%y, sel(n)%z, &
               sel(n)%u, sel(n)%v, sel(n)%w
     end do
 
     !10   format (e17.10,",",e17.10,",",e17.10,",")
     !30   format (e17.10,e17.10,e17.10)
     !40   format (e17.10," ",e17.10," ",e17.10)
-    50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10, &
-            " ",e17.10)
+    !50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10, &
+    !        " ",e17.10)
+    60   format (i0, "|", e17.10, "|", e17.10, "|", e17.10, "|", &
+            e17.10, "|", e17.10, "|", e17.10)
     !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
 
