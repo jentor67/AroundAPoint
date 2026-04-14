@@ -105,8 +105,9 @@ contains
             sel%nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
     end if
     
-    write(*,*) "Parameters: ",sel%omega, sel%e, sel%i, sel%omegaBIG, &
-            sel%mass, sel%a, sel%nue
+    write(*,*) "i: ", sel%i, "  omegaBig: ",  sel%omegaBIG, &
+     "  omega: ",sel%omega, "  nue: ", sel%nue, "  e: ",sel%e, &
+     "  a: ",sel%a, "  mass: ", sel%mass
 
     sel%b = sel%a*((1-(sel%e**2))**.5);
 
