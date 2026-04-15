@@ -11,7 +11,7 @@ nue_max .1
 ObjectCount 10
 ObjectMass_min 1
 ObjectMass_max 3
-omega_min 0
-omega_max .1
+omega_min 135
+omega_max 220
 omegaBig_min 0
 omegaBig_max .1

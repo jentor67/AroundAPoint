@@ -109,7 +109,7 @@ contains
      "  omega: ",sel%omega, "  nue: ", sel%nue, "  e: ",sel%e, &
      "  a: ",sel%a, "  mass: ", sel%mass
 
-    sel%b = sel%a*((1-(sel%e**2))**.5);
+    sel%b = sel%a*((1-(sel%e**2))**.5)
 
     !call radiusVelocity(sel%mass, sel%a, sel%e, &
     !        rp, ra, sel%mue, T)
@@ -133,21 +133,30 @@ contains
 
   subroutine startPointVelocity(sel,rp)
     type(particle) sel
-    real(kind=kind(1.0d0)) :: rp, rho, xp, r;
+    !real(kind=kind(1.0d0)) :: rp, rho, xp, r, radians;
+    real(kind=kind(1.0d0)) :: rp, xp, r, radians;
     real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt;
 
     !// Rotate nue  degrees
-    r = sel%a*(1-(sel%e**2))/(1+sel%e*cos(sel%nue/180*pie))
-    sel%x = r*cos(pie*sel%nue/180)
-    xp = sel%a-rp+sel%x
-    sel%y = r*sin(pie*sel%nue/180)
-    rho = 180*atan( sel%y/xp )/pie
-    sel%z = 1.0
+    radians= pie*sel%nue/180
+    sel%x = sel%a*cos(radians) - sel%a*sel%e
+    sel%y = sel%b*sin(radians)
+   
+    write(*,*) sel%x, sel%y 
 
-    if( xp < 0 ) rho = rho + 180
 
-    if( ( xp > 0 ) .and. ( sel%y < 0 ) ) rho = rho +  360
 
+
+    !r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( (sel%nue / 180) * pie) )
+    r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( radians) )
+    !sel%x = r*cos(pie*sel%nue/180)
+    !xp = sel%a-rp+sel%x
+    !sel%y = r*sin(pie*sel%nue/180)
+    !write(*,*) sel%x, sel%y 
+    !rho = 180*atan( sel%y/xp )/pie
+    sel%z = 0
+    !if( xp < 0 ) rho = rho + 180
+    !if( ( xp > 0 ) .and. ( sel%y < 0 ) ) rho = rho +  360
     sel%v = ( (2*sel%mue/r) - (sel%mue/sel%a) )**.5
 
 
@@ -157,30 +166,35 @@ contains
 
 
     !// Rotate omega  degrees
+    ! position
     call rotate2D(sel%x, sel%y, sel%omega, xt, yt)
     sel%x = xt
     sel%y = yt
 
+    ! velocity
     call rotate2D(sel%u, sel%v, sel%omega, ut, vt)
     sel%u = ut
     sel%v = vt
 
     !// Rotate i degrees
+    ! position
     call rotate2D(sel%y, sel%z, sel%i, yt, zt)
     sel%y = yt
     sel%z = zt
 
+    ! velocity
     call rotate2D(sel%v, sel%w,  sel%i, vt, wt)
     sel%v = vt
     sel%w = wt
 
     !// Rotate OMEGA degrees
-    call rotate2D(sel%x, sel%y, sel%OMEGA, xt, yt)
+    ! position
+    call rotate2D(sel%x, sel%y, sel%omegaBIG, xt, yt)
     sel%x = xt
     sel%y = yt
 
-
-    call rotate2D(sel%u, sel%v, sel%OMEGA, ut, vt)
+    ! velocity
+    call rotate2D(sel%u, sel%v, sel%omegaBIG, ut, vt)
     sel%u = ut
     sel%v = vt
 
@@ -292,7 +306,7 @@ contains
     sel%mue = real(gcu*(centerMass+sel%mass),kind=4) ! standard gravitational parameters
 
     T = 2 * pie * (( (sel%a**3) /sel%mue )**.5) ! Peroid
-    
+
   end subroutine radiusVelocity
 
 

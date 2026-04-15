@@ -24,38 +24,30 @@ contains
     real(kind=kind(1.0d0)) :: vx1, vy1, vz1
     real(kind=kind(1.0d0)) :: vx0, vy0, vz0= 0.0
    
-    !write(*,*) "V tang", v 
 
     E = (b/a)**2
     F = ( (b**2) - E*(x**2) )**.5
-    !F = ( E*(x**2) - (b**2) )**.5
-    !write(*,*) "F",F,b,E,x,(b-x)
 
     if( (x > 0) .and. (y == 0) ) then
-        !write(*,*) "if 1"
         vx0 = 0.0;
         vy0 = 1.0;
     else if( (x < 0) .and. (y == 0) ) then
-        !write(*,*) "if 2"
         vx0 = 0.0
         vy0 = -1.0
     else if( (x == 0) .and. (y > 0) ) then
-        !write(*,*) "if 3"
         vx0 = -1.0
         vy0 = 0.0
     else if( (x == 0) .and. (y < 0) ) then
-        !write(*,*) "if 4"
         vx0 = 1.0
         vy0 = 0.0
     else
-        !write(*,*) "if 5",E,x,F
         vx0 = -1.0
         if( y < 0 ) vx0 = 1.0
         vy0 = E*x/F
     end if
-    !write(*,*) "uvSub",vx0,vy0,vz0 
+
     call unitVector(vx0, vy0, vz0, vx1, vy1, vz1)
-    !write(*,*) "uv",vx1,vy1 
+
     vx = vx1*v
     vy = vy1*v
 
