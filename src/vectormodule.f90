@@ -3,10 +3,17 @@ module vectormodule
   use constantsmodule
   implicit none
 
-  public rotate2D, tangentVectorEllipse, unitVector, Vector
+  public rotate2D, tangentVectorEllipse, unitVector, Vector, magnitude
 
 
 contains
+
+  function magnitude(x, y, z) result(mag)
+    real(kind=kind(1.0d0)) :: x, y, z, mag
+
+    mag = sqrt(x**2 + y**2 + z**2)
+
+  end function magnitude
 
   subroutine rotate2D(x, y, angle, x0, y0)
     real :: angle

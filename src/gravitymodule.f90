@@ -211,6 +211,7 @@ contains
     sel%u = sel%u+fx*masstime
     sel%v = sel%v+fy*masstime
     sel%w = sel%w+fz*masstime
+
   end subroutine velocitychange
 
 
@@ -252,7 +253,8 @@ contains
     dis1 = distance(a,b)
 
     !write(*,*) gcu, a%mass, b%mass, dis1
-    force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
+    !force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
+    force = gcu*a%mass*b%mass/(dis1**2)
     
     constant = force/dis1
 
@@ -288,9 +290,13 @@ contains
   subroutine printparticle(i, sel)
     integer :: i
     type(particle) sel
+    real(kind=kind(1.0d0)) :: r, v
+   
+    r =  magnitude(sel%x, sel%y, sel%z) 
+    v = magnitude(sel%u, sel%v, sel%w)
 
-    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, sel%u, sel%v, sel%w, &
-            sel%mass
+    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, sel%u, sel%v, sel%w, v
+    !        sel%mass
 
   end subroutine printparticle
 
