@@ -118,7 +118,7 @@ contains
     write(*,*) "After radiusVelocity: ", rp, ra, sel%mue, T
 
     call startPointVelocity(sel,rp)
-    write(*,*) "After startPointVelocity",sel%u, sel%v, sel%w
+    write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
 
   end subroutine getpartparm
 
@@ -134,35 +134,39 @@ contains
   subroutine startPointVelocity(sel,rp)
     type(particle) sel
     !real(kind=kind(1.0d0)) :: rp, rho, xp, r, radians;
-    real(kind=kind(1.0d0)) :: rp, xp, r, radians;
+    real(kind=kind(1.0d0)) :: rp, xp, r, radians, nue_radians, vr, v0
+    real(kind=kind(1.0d0)) :: con1
+    real(kind=kind(1.0d0)) :: vmag  ! velocity magnitue
+    real(kind=kind(1.0d0)) :: mue  ! G*M(centerMass)
     real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt;
 
     !// Rotate nue  degrees
-    radians= pie*sel%nue/180
-    sel%x = sel%a*cos(radians) - sel%a*sel%e
-    sel%y = sel%b*sin(radians)
-   
-    write(*,*) sel%x, sel%y 
+    nue_radians = pie*sel%nue/180
 
+    ! distance from the focus(where the star is)
+    r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( nue_radians) )
 
-
-
-    !r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( (sel%nue / 180) * pie) )
-    r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( radians) )
-    !sel%x = r*cos(pie*sel%nue/180)
-    !xp = sel%a-rp+sel%x
-    !sel%y = r*sin(pie*sel%nue/180)
-    !write(*,*) sel%x, sel%y 
-    !rho = 180*atan( sel%y/xp )/pie
+    !  x y location
+    sel%x = r*cos(nue_radians)
+    sel%y = r*sin(nue_radians)
     sel%z = 0
-    !if( xp < 0 ) rho = rho + 180
-    !if( ( xp > 0 ) .and. ( sel%y < 0 ) ) rho = rho +  360
-    sel%v = ( (2*sel%mue/r) - (sel%mue/sel%a) )**.5
 
+    ! ***determine the velocity at the true anomaly sel%nue****
+    vmag = ( sel%mue*( (2/r) - (1/sel%a) ) )**.5 ! velocity magnitude
+    mue = gcu*centerMass  !mue based on the centerMass or sun
 
-    call tangentVectorEllipse(xp, sel%y, sel%a,sel%b, sel%v, ut, vt)
-    sel%u = ut
-    sel%v = vt
+    ! constant
+    con1 = (  mue/( sel%a*(1-(sel%e**2)) ) )**.5
+
+    !Radial component( toward/away from the star
+    vr = con1*sel%e*sin(nue_radians) 
+    
+    !Transverse component(sideways, along the orbit
+    v0 = con1*( 1 + sel%e*cos(nue_radians) )
+
+    sel%u = vr*cos(nue_radians) - v0*sin(nue_radians)
+    sel%v = vr*sin(nue_radians) + v0*cos(nue_radians)
+    sel%w = 0
 
 
     !// Rotate omega  degrees
@@ -206,6 +210,8 @@ contains
     real(kind=kind(1.0d0)) :: fx, fy, fz, masstime
     type(particle) sel 
 
+    ! f=ma --> a=f/m
+    !dv = a*dt --> f/m*dt
     masstime = timedisp/sel%mass
 
     sel%u = sel%u+fx*masstime
@@ -252,7 +258,7 @@ contains
 
     dis1 = distance(a,b)
 
-    !write(*,*) gcu, a%mass, b%mass, dis1
+    !write(*,*) "Force",gcu, a%mass, b%mass, dis1
     !force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     force = gcu*a%mass*b%mass/(dis1**2)
     
@@ -261,6 +267,7 @@ contains
     fx = constant*(b%x-a%x)
     fy = constant*(b%y-a%y)
     fz = constant*(b%z-a%z)
+    !write(*,*) "fx: ", fx, " fy: ",fy, " fz: ", fz, " A-mass: ", a%mass, " B-mass: ", b%mass, " dist: ", dis1
     
   end subroutine forceVector
 

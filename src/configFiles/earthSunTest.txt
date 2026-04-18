@@ -1,10 +1,10 @@
 a 1.49598023E11
 CenterMass 1.988475E30
-e 0.0
-i 0
-Iterations 6
+e 0
+i 10
+Iterations 86400
 nue 0
 ObjectCount 2
 ObjectMass 5.97217E24
-omega 270
-omegaBig 0
+omega 30
+omegaBig 60
