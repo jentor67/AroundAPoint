@@ -273,14 +273,28 @@ contains
 
 
   !subroutine printparticles(sel, io, particles)
-  subroutine printparticles(iteration, sel, units, particles)
+  subroutine printparticles(iteration, sel, units, particles, b_blender)
+    logical :: b_blender
+
     integer, intent(inout) :: units(:)
     integer :: n, particles, iteration
+    integer :: blender_factor 
+
     type(particle) sel(particles)
-    
+  
+
+    blender_factor = 1 ! default
+   
+    ! test if this is blender file 
+    if( b_blender ) then
+      blender_factor = 1
+      !blender_factor = 1000000000
+    end if
+
     !write(*,*) particles, sel(1)%x
     do n = 1, particles
-      write(units(n),60) iteration, sel(n)%x, sel(n)%y, sel(n)%z, &
+      write(units(n),60) iteration, &
+          sel(n)%x/blender_factor, sel(n)%y/blender_factor, sel(n)%z/blender_factor, &
               sel(n)%u, sel(n)%v, sel(n)%w
     end do
 

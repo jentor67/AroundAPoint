@@ -7,12 +7,17 @@ Program main
    implicit none
 
    character(len=100) :: filename
+   character(len=100) :: filename_blender
    character(len=256) :: config_file_path
 
    !integer, dimension(100000) :: units
    !integer :: units(100000)
    integer, allocatable :: units(:)
-   integer :: n, m, k, particles, iterations, stat, temp_id
+   integer, allocatable :: units_blender(:)
+   integer :: n, m, k, particles, stat, temp_id
+   integer :: n_blender, n_blender_div, n_blender_limit
+
+   logical :: blender
 
    real(kind=kind(1.0d0)) :: c, perCur
    real(kind=kind(1.0d0)) :: r
@@ -46,18 +51,16 @@ Program main
 
    centerMass =  bc%CenterMass
 
-   iterations = 3600*24*365.25  ! one year
-   iterations = 315360  ! 1 % one year
-   iterations = 3  ! 1 % one year
-   
    particles = bc%ObjectCount !size(partarray,dim=1)
 
    call valueLargeBody(partarray(1),bc)
  
    allocate(units(10))
+   allocate(units_blender(10))
 
    ! get initial positions of particles
    do n = 1, particles
+     ! **** create main data file ****
      write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
 
      open(newunit=temp_id, file=filename, status='replace', &
@@ -70,6 +73,23 @@ Program main
      
      write(temp_id,'(A)') "frame|x|y|z|u|v|w"
      units(n) = temp_id
+     ! ****    ****
+
+     ! **** create blender file ****
+     write(filename_blender, '(A,I8.8,A)') '/mnt/kdrive/file_blender_', n, '.dat'
+
+     open(newunit=temp_id, file=filename_blender, status='replace', &
+             action='write', iostat=stat)
+
+     if (stat /= 0) then
+        print *, "Error opening file, iostat = ", stat
+        stop
+     end if
+     
+     write(temp_id,'(A)') "frame|x|y|z|u|v|w"
+     units_blender(n) = temp_id
+
+     ! ****    ****
 
      if( n > 1 ) call getpartparm(partarray(n),bc) 
 
@@ -89,9 +109,26 @@ Program main
    startX = partarray(2)%x
    startY = partarray(2)%y
    startZ = partarray(2)%z
+
+   ! set the blender file numbers
+   n_blender = 1
+   n_blender_limit = 200
+   n_blender_div = bc%Iterations/200
+   ! ****************************
+
    write(*,*) "Start of Iterations"
    do n = 1, bc%Iterations
-     call printparticles(n, partarray, units, particles)
+     blender= .false.
+     call printparticles(n, partarray, units, particles,blender)
+
+     ! test if writeing to blender
+     if( modulo(n,n_blender_div) == 0 ) then
+       blender= .true. ! set blender to true
+       call printparticles(n_blender, partarray, units_blender, particles,blender)
+       n_blender = n_blender + 1
+       blender= .false. ! set blender to false
+     end if
+
      do m = 1, particles
        fxsum = 0
        fysum = 0
@@ -125,5 +162,6 @@ Program main
 
    do n = 1, particles
       close(units(n))
+      close(units_blender(n))
    end do
 End Program main
