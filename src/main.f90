@@ -143,6 +143,7 @@ Program main
        end do
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
+
      end do
    end do
    write(*,*) "End of Iterations"

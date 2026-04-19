@@ -27,6 +27,7 @@ module gravitymodule
     real :: e
     real :: i
     real :: omegaBIG
+    real(kind=kind(1.0d0)) :: radius
     real(kind=kind(1.0d0)) :: mass
     real(kind=kind(1.0d0)) :: a
     real(kind=kind(1.0d0)) :: b
@@ -90,7 +91,14 @@ contains
     else
             sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
     end if
- 
+    ! determine radius
+    ! v=(4/3)*pie*r^3 --> r = (v*(3/4)/pie)^(1/3)
+    ! rho=m/v --> v=m/rho
+    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
+    !sel%radius = sel%mass/density_material
+    !)*(3.0/4.0)/pie )**(0.3333)
+    
+    write(*,*) sel%radius, sel%mass, density_material, pie
     ! test if given a sigle SemiMajorAxis
     if( cf%a > -9999.9 ) then
             sel%a = cf%a
@@ -258,6 +266,11 @@ contains
 
     dis1 = distance(a,b)
 
+    ! test if colision
+    if( dis1 < (a%radius+b%radius) ) then
+            write(*,*) "Collision distance ", dis1, a%radius, b%radius
+    end if
+
     !write(*,*) "Force",gcu, a%mass, b%mass, dis1
     !force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     force = gcu*a%mass*b%mass/(dis1**2)
@@ -316,7 +329,9 @@ contains
     r =  magnitude(sel%x, sel%y, sel%z) 
     v = magnitude(sel%u, sel%v, sel%w)
 
-    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, sel%u, sel%v, sel%w, v
+    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, &
+            sel%u, sel%v, sel%w, v, & 
+            "mass: ", sel%mass, " radius: ",sel%radius
     !        sel%mass
 
   end subroutine printparticle

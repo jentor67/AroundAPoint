@@ -12,7 +12,7 @@ module readconfigmodule
     real(kind=kind(1.0d0)) :: ObjectMass
     real(kind=kind(1.0d0)) :: ObjectMass_min
     real(kind=kind(1.0d0)) :: ObjectMass_max
-    
+   
     real :: e
     real :: e_min
     real :: e_max
@@ -28,7 +28,7 @@ module readconfigmodule
     real :: omegabig
     real :: omegabig_min
     real :: omegabig_max
-
+    
     integer :: Iterations
     integer :: ObjectCount
   end type boundaryconditions
@@ -70,7 +70,7 @@ contains
 
         case ("CenterMass")
           bc%CenterMass = attribute_value
-        
+       
         case ("e")
           bc%e = real(attribute_value,kind=4)
 
