@@ -9,6 +9,7 @@ module gravitymodule
   public :: acceleration, distance
   public :: valueLargeBody, forcevector
   public :: velocitychange, getpartparm, printparticle, printparticles
+  public :: collisionTest
 
   real :: mass 
 
@@ -37,6 +38,35 @@ module gravitymodule
 
 
 contains
+
+  subroutine collisionTest(sel,n_particals)
+    integer :: n_primary, n_test, n_particals
+
+    real(kind=kind(1.0d0)) :: dist_two_objects
+    
+    type(particle) sel(n_particals)
+
+
+    do n_primary = 1, n_particals
+
+      do n_test = 1, n_particals
+
+        if( n_primary /= n_test ) then
+
+          dist_two_objects = distance( sel(n_primary), sel(n_test) )
+
+          !if( dis1 < (a%radius+b%radius) ) then
+          if( dist_two_objects < ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
+            write(*,*) "Collision"
+          end if       
+
+        end if
+
+      end do
+
+    end do
+
+  end subroutine collisionTest
 
   subroutine getpartparm(sel, cf)
     type(boundaryconditions) :: cf
@@ -91,14 +121,11 @@ contains
     else
             sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
     end if
-    ! determine radius
-    ! v=(4/3)*pie*r^3 --> r = (v*(3/4)/pie)^(1/3)
-    ! rho=m/v --> v=m/rho
+
     sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
-    !sel%radius = sel%mass/density_material
-    !)*(3.0/4.0)/pie )**(0.3333)
     
-    write(*,*) sel%radius, sel%mass, density_material, pie
+    !write(*,*) sel%radius, sel%mass, density_material, pie
+
     ! test if given a sigle SemiMajorAxis
     if( cf%a > -9999.9 ) then
             sel%a = cf%a
@@ -119,13 +146,11 @@ contains
 
     sel%b = sel%a*((1-(sel%e**2))**.5)
 
-    !call radiusVelocity(sel%mass, sel%a, sel%e, &
-    !        rp, ra, sel%mue, T)
     call radiusVelocity(rp, ra, T, sel)
 
     write(*,*) "After radiusVelocity: ", rp, ra, sel%mue, T
 
-    call startPointVelocity(sel,rp)
+    call startPointVelocity(sel)
     write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
 
   end subroutine getpartparm
@@ -139,16 +164,15 @@ contains
 
   end subroutine positionchange
 
-  subroutine startPointVelocity(sel,rp)
+  subroutine startPointVelocity(sel)
     type(particle) sel
-    !real(kind=kind(1.0d0)) :: rp, rho, xp, r, radians;
-    real(kind=kind(1.0d0)) :: rp, xp, r, radians, nue_radians, vr, v0
+    real(kind=kind(1.0d0)) :: r, nue_radians, vr, v0
     real(kind=kind(1.0d0)) :: con1
     real(kind=kind(1.0d0)) :: vmag  ! velocity magnitue
     real(kind=kind(1.0d0)) :: mue  ! G*M(centerMass)
     real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt;
 
-    !// Rotate nue  degrees
+    ! *** Rotate nue  degrees ***
     nue_radians = pie*sel%nue/180
 
     ! distance from the focus(where the star is)
@@ -175,6 +199,7 @@ contains
     sel%u = vr*cos(nue_radians) - v0*sin(nue_radians)
     sel%v = vr*sin(nue_radians) + v0*cos(nue_radians)
     sel%w = 0
+    ! *****************************
 
 
     !// Rotate omega  degrees
@@ -267,9 +292,9 @@ contains
     dis1 = distance(a,b)
 
     ! test if colision
-    if( dis1 < (a%radius+b%radius) ) then
-            write(*,*) "Collision distance ", dis1, a%radius, b%radius
-    end if
+    !if( dis1 < (a%radius+b%radius) ) then
+    !        write(*,*) "Collision distance ", dis1, a%radius, b%radius
+    !end if
 
     !write(*,*) "Force",gcu, a%mass, b%mass, dis1
     !force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)

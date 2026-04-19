@@ -143,8 +143,10 @@ Program main
        end do
        call velocitychange(partarray(m), fxsum,fysum,fzsum)
        call positionchange(partarray(m))
-
      end do
+     !  test if there are any collisions
+     call collisionTest(partarray,particles)
+     
    end do
    write(*,*) "End of Iterations"
 
