@@ -102,9 +102,9 @@ Program main
    end do
 
    ! print initial values
-   do n = 1, particles
-     call printparticle( n, partarray(n) )
-   end do
+   !do n = 1, particles
+   !  call printparticle( n, partarray(n) )
+   !end do
 
    startX = partarray(2)%x
    startY = partarray(2)%y
@@ -112,8 +112,8 @@ Program main
 
    ! set the blender file numbers
    n_blender = 1
-   n_blender_limit = 200
-   n_blender_div = bc%Iterations/200
+   n_blender_limit = 2000
+   n_blender_div = bc%Iterations/n_blender_limit
    ! ****************************
 
    write(*,*) "Start of Iterations"
@@ -130,19 +130,29 @@ Program main
      end if
 
      do m = 1, particles
-       fxsum = 0
-       fysum = 0
-       fzsum = 0
-       do k = 1, particles
-         if( k /= m) then
-           call forcevector(partarray(m),partarray(k), fx, fy, fz)
-           fxsum = fxsum + fx
-           fysum = fysum + fy
-           fzsum = fzsum + fz
-         end if
-       end do
-       call velocitychange(partarray(m), fxsum,fysum,fzsum)
-       call positionchange(partarray(m))
+
+       if( partarray(m)%mass > 0.0 ) then
+
+         fxsum = 0
+         fysum = 0
+         fzsum = 0
+
+         do k = 1, particles
+
+           if( k /= m .and. partarray(k)%mass > 0.0) then
+             call forcevector(partarray(m),partarray(k), fx, fy, fz)
+             fxsum = fxsum + fx
+             fysum = fysum + fy
+             fzsum = fzsum + fz
+           end if
+
+         end do
+
+         call velocitychange(partarray(m), fxsum,fysum,fzsum)
+         call positionchange(partarray(m))
+
+       end if
+
      end do
      !  test if there are any collisions
      call collisionTest(partarray,particles)
@@ -158,9 +168,9 @@ Program main
    perCur = 100*r/c
 
    ! print final values
-   do n = 1, particles
-     call printparticle( n, partarray(n) )
-   end do
+   !do n = 1, particles
+     !call printparticle( n, partarray(n) )
+   !end do
 
 
    do n = 1, particles

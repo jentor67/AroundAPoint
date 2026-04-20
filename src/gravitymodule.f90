@@ -51,13 +51,34 @@ contains
 
       do n_test = 1, n_particals
 
-        if( n_primary /= n_test ) then
+        if( n_primary /= n_test .and. &
+              sel(n_primary)%mass > 0.0 .and. &
+              sel(n_test)%mass > 0.0 ) then
 
           dist_two_objects = distance( sel(n_primary), sel(n_test) )
 
           !if( dis1 < (a%radius+b%radius) ) then
-          if( dist_two_objects < ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
+          if( dist_two_objects < &
+                  ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
             write(*,*) "Collision"
+            ! determine the largest object
+            if( sel(n_primary)%mass >= sel(n_test)%mass ) then
+              sel(n_primary)%mass = sel(n_primary)%mass + &
+                      sel(n_test)%mass
+              sel(n_test)%mass = -1
+              sel(n_test)%x = -10000
+              sel(n_test)%y = -10000
+              sel(n_test)%z = -10000
+            else
+              sel(n_test)%mass = sel(n_primary)%mass + &
+                      sel(n_test)%mass
+              sel(n_primary)%mass = -1
+              sel(n_primary)%x = -10000
+              sel(n_primary)%y = -10000
+              sel(n_primary)%z = -10000
+            end if
+
+
           end if       
 
         end if
@@ -331,9 +352,15 @@ contains
 
     !write(*,*) particles, sel(1)%x
     do n = 1, particles
-      write(units(n),60) iteration, &
-          sel(n)%x/blender_factor, sel(n)%y/blender_factor, sel(n)%z/blender_factor, &
-              sel(n)%u, sel(n)%v, sel(n)%w
+
+      !if( sel(n)%mass > 0.0 ) then
+
+        write(units(n),60) iteration, &
+          sel(n)%x/blender_factor, sel(n)%y/blender_factor, &
+          sel(n)%z/blender_factor, sel(n)%u, sel(n)%v, sel(n)%w
+
+      !end if
+
     end do
 
     !10   format (e17.10,",",e17.10,",",e17.10,",")
