@@ -132,7 +132,8 @@ Program main
        n_blender = n_blender + 1
        blender= .false. ! set blender to false
      end if
-
+     
+     !  *****START of MAIN loop******
      do m = 1, particles
 
        if( partarray(m)%mass > 0.0 ) then
@@ -158,6 +159,9 @@ Program main
        end if
 
      end do
+     !  ******End of Main loop*******
+
+
      !  test if there are any collisions
      call collisionTest(partarray,particles)
      
