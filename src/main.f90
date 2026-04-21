@@ -19,21 +19,16 @@ Program main
 
    logical :: blender
 
-   real(kind=kind(1.0d0)) :: c, perCur
-   real(kind=kind(1.0d0)) :: r
-   real(kind=kind(1.0d0)) :: fx, fy, fz
-   real(kind=kind(1.0d0)) :: fxsum, fysum, fzsum
-   real(kind=kind(1.0d0)) :: startX, startY, startZ
+   real(dp) :: c, perCur
+   real(dp) :: r
+   real(dp) :: fx, fy, fz
+   real(dp) :: fxsum, fysum, fzsum
+   real(dp) :: startX, startY, startZ
 
-   ! set 1,000,000 array
-   type(particle), dimension(1000000) :: partarray
- 
+   type(particle), allocatable :: partarray(:)
 
    !************************************************* 
    
-   ! clear working data
-   call execute_command_line("rm -f /mnt/kdrive/*.dat")
-
    ! Get config file
    n = command_argument_count()
    print *, "Number of arguments:", n 
@@ -48,6 +43,12 @@ Program main
 
    call read_config_file(config_file_path)
 
+   allocate(partarray(bc%ObjectCount))
+
+   ! clear working data
+   call execute_command_line("rm -f " // trim(bc%output_directory) &
+           // "*.dat")
+
 
    centerMass =  bc%CenterMass
 
@@ -55,13 +56,14 @@ Program main
 
    call valueLargeBody(partarray(1),bc)
  
-   allocate(units(10))
-   allocate(units_blender(10))
+   allocate( units(bc%ObjectCount) )
+   allocate( units_blender(bc%ObjectCount) )
 
    ! get initial positions of particles
    do n = 1, particles
      ! **** create main data file ****
-     write(filename, '(A,I8.8,A)') '/mnt/kdrive/file_', n, '.dat'
+     write(filename, '(A,I8.8,A)') trim(bc%output_directory) &
+             // 'file_', n, '.dat'
 
      open(newunit=temp_id, file=filename, status='replace', &
              action='write', iostat=stat)
@@ -76,7 +78,8 @@ Program main
      ! ****    ****
 
      ! **** create blender file ****
-     write(filename_blender, '(A,I8.8,A)') '/mnt/kdrive/file_blender_', n, '.dat'
+     write(filename_blender, '(A,I8.8,A)') trim(bc%output_directory) &
+             // 'file_blender_', n, '.dat'
 
      open(newunit=temp_id, file=filename_blender, status='replace', &
              action='write', iostat=stat)
@@ -112,7 +115,7 @@ Program main
 
    ! set the blender file numbers
    n_blender = 1
-   n_blender_limit = 2000
+   n_blender_limit = bc%blender_limit
    n_blender_div = bc%Iterations/n_blender_limit
    ! ****************************
 
@@ -121,10 +124,11 @@ Program main
      blender= .false.
      call printparticles(n, partarray, units, particles,blender)
 
-     ! test if writeing to blender
+     ! test if writing to blender
      if( modulo(n,n_blender_div) == 0 ) then
        blender= .true. ! set blender to true
-       call printparticles(n_blender, partarray, units_blender, particles,blender)
+       call printparticles(n_blender, partarray, units_blender, &
+               particles,blender)
        n_blender = n_blender + 1
        blender= .false. ! set blender to false
      end if

@@ -1,5 +1,6 @@
 !> \\file startParameters.f95
 module startparametersmodule
+  use constantsmodule
   implicit none
   public :: randomArgumentOfPeriapsis
   public :: randomEccentricity 
@@ -12,7 +13,7 @@ contains
 
   ! finds a random values between 0 and 360 degrees
   function randomArgumentOfPeriapsis(min, max) result(omega)
-    real :: omega, min, max, diff
+    real(dp) :: omega, min, max, diff
 
     diff = max - min
 
@@ -25,7 +26,7 @@ contains
 
   ! finds a randomn values between 0 and 1
   function randomEccentricity(min, max) result(e)
-    real :: e, min, max, diff
+    real(dp) :: e, min, max, diff
 
     diff = max - min
 
@@ -38,7 +39,7 @@ contains
 
   ! finds a random values between 0 and 360 degrees
   function randomInclination(min, max) result(inclination)
-    real :: inclination, min, max, diff
+    real(dp) :: inclination, min, max, diff
 
     diff = max - min
 
@@ -51,7 +52,7 @@ contains
 
   ! finds a random values between 0 and 360 degrees
   function randomLongitudeOfAscendingNode(min, max) result(OMEGA)
-    real :: OMEGA, min, max, diff
+    real(dp) :: OMEGA, min, max, diff
     
     diff = max - min
 
@@ -64,7 +65,7 @@ contains
 
   ! determine the mass
   function randomMass(min, max) result(m)
-    real(kind=kind(1.0d0)) :: m, min, max, diff
+    real(dp) :: m, min, max, diff
 
     diff = max - min
 
@@ -77,7 +78,7 @@ contains
 
   !  determine the semi-major axis
   function randomSemiMajorAxis(min, max) result(a)
-    real(kind=kind(1.0d0)) :: a, min, max, diff
+    real(dp) :: a, min, max, diff
     
     diff = max - min
 
@@ -90,7 +91,7 @@ contains
 
   ! finds a random values between 0 and 360 degrees
   function randomTrueAnomaly(min, max) result(nue)
-    real :: nue, min, max, diff
+    real(dp) :: nue, min, max, diff
 
     diff = max - min
 

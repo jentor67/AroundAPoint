@@ -1,7 +1,7 @@
 FC = gfortran
 FFLAGS = -std=f2008 -O2 -Wall
 TARGET = my_program
-SRCS = readconfigmodule.f90 constantsmodule.f90 startparametersmodule.f90 vectormodule.f90 gravitymodule.f90 main.f90  
+SRCS = constantsmodule.f90 readconfigmodule.f90 startparametersmodule.f90 vectormodule.f90 gravitymodule.f90 main.f90  
 OBJS = $(SRCS:.f90=.o)
 
 all: $(TARGET)

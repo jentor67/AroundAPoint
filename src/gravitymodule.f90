@@ -11,29 +11,28 @@ module gravitymodule
   public :: velocitychange, getpartparm, printparticle, printparticles
   public :: collisionTest
 
-  real :: mass 
-
-  real(kind=kind(1.0d0)) :: timedisp = 1 !.000001
-  real(kind=kind(1.0d0)) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
+  real(dp) :: mass 
+  real(dp) :: timedisp = 1 !.000001
+  real(dp) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
   !real(kind=kind(1.0d0)) :: mass1 = 1.989E30!; // kg
 
   type particle
-    real(kind=kind(1.0d0)) :: x
-    real(kind=kind(1.0d0)) :: y
-    real(kind=kind(1.0d0)) :: z
-    real(kind=kind(1.0d0)) :: u
-    real(kind=kind(1.0d0)) :: v
-    real(kind=kind(1.0d0)) :: w
-    real :: omega
-    real :: e
-    real :: i
-    real :: omegaBIG
-    real(kind=kind(1.0d0)) :: radius
-    real(kind=kind(1.0d0)) :: mass
-    real(kind=kind(1.0d0)) :: a
-    real(kind=kind(1.0d0)) :: b
-    real :: nue
-    real :: mue
+    real(dp) :: x
+    real(dp) :: y
+    real(dp) :: z
+    real(dp) :: u
+    real(dp) :: v
+    real(dp) :: w
+    real(dp) :: omega
+    real(dp) :: e
+    real(dp) :: i
+    real(dp) :: omegaBIG
+    real(dp) :: radius
+    real(dp) :: mass
+    real(dp) :: a
+    real(dp) :: b
+    real(dp) :: nue
+    real(dp) :: mue
   end type particle
 
 
@@ -42,7 +41,7 @@ contains
   subroutine collisionTest(sel,n_particals)
     integer :: n_primary, n_test, n_particals
 
-    real(kind=kind(1.0d0)) :: dist_two_objects
+    real(dp) :: dist_two_objects
     
     type(particle) sel(n_particals)
 
@@ -93,8 +92,8 @@ contains
     type(boundaryconditions) :: cf
     type(particle) sel
 
-    real(kind=kind(1.0d0)) :: ra, rp
-    real(kind=kind(1.0d0)) :: T
+    real(dp) :: ra, rp
+    real(dp) :: T
 
     ! ***** Earth parameters *****
     !sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
@@ -187,11 +186,11 @@ contains
 
   subroutine startPointVelocity(sel)
     type(particle) sel
-    real(kind=kind(1.0d0)) :: r, nue_radians, vr, v0
-    real(kind=kind(1.0d0)) :: con1
-    real(kind=kind(1.0d0)) :: vmag  ! velocity magnitue
-    real(kind=kind(1.0d0)) :: mue  ! G*M(centerMass)
-    real(kind=kind(1.0d0)) :: xt, yt, zt, ut, vt, wt;
+    real(dp) :: r, nue_radians, vr, v0
+    real(dp) :: con1
+    real(dp) :: vmag  ! velocity magnitue
+    real(dp) :: mue  ! G*M(centerMass)
+    real(dp) :: xt, yt, zt, ut, vt, wt;
 
     ! *** Rotate nue  degrees ***
     nue_radians = pie*sel%nue/180
@@ -261,7 +260,7 @@ contains
 
 
   subroutine velocitychange(sel, fx, fy, fz)
-    real(kind=kind(1.0d0)) :: fx, fy, fz, masstime
+    real(dp) :: fx, fy, fz, masstime
     type(particle) sel 
 
     ! f=ma --> a=f/m
@@ -289,7 +288,7 @@ contains
 
 
   function acceleration(m,r) result(grav) 
-    real(kind=kind(1.0d0)) :: grav, m, r
+    real(dp) :: grav, m, r
 
     grav = gcu*m/(r**2)
   end function 
@@ -297,7 +296,7 @@ contains
 
   function distance(a, b) result(r) 
     type(particle) a, b
-    real(kind=kind(1.0d0)) :: r  ! good
+    real(dp) :: r  ! good
 
     !write(*,*) "TEST",b%x, r
 
@@ -307,7 +306,7 @@ contains
 
 
   subroutine forcevector(a, b, fx, fy, fz) 
-    real(kind=kind(1.0d0)) :: fx, fy, fz, dis1,force, constant
+    real(dp) :: fx, fy, fz, dis1,force, constant
     type(particle) a, b
 
     dis1 = distance(a,b)
@@ -376,7 +375,7 @@ contains
   subroutine printparticle(i, sel)
     integer :: i
     type(particle) sel
-    real(kind=kind(1.0d0)) :: r, v
+    real(dp) :: r, v
    
     r =  magnitude(sel%x, sel%y, sel%z) 
     v = magnitude(sel%u, sel%v, sel%w)
@@ -391,7 +390,7 @@ contains
 
   subroutine radiusVelocity(rp, ra, T, sel)
     type(particle) sel
-    real(kind=kind(1.0d0)) :: rp, ra, T
+    real(dp) :: rp, ra, T
 
     rp = (1-sel%e)*sel%a ! distance at perigee (m)
 

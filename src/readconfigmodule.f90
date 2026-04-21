@@ -1,34 +1,38 @@
 !> \\file readconfigmodule.f95
 module readconfigmodule
+  use constantsmodule
   implicit none
   
   public :: read_config_file
 
   type boundaryconditions
-    real(kind=kind(1.0d0)) :: a
-    real(kind=kind(1.0d0)) :: a_min
-    real(kind=kind(1.0d0)) :: a_max
-    real(kind=kind(1.0d0)) :: CenterMass
-    real(kind=kind(1.0d0)) :: ObjectMass
-    real(kind=kind(1.0d0)) :: ObjectMass_min
-    real(kind=kind(1.0d0)) :: ObjectMass_max
+    character(len=256) ::output_directory
+
+    real(dp) :: a
+    real(dp) :: a_min
+    real(dp) :: a_max
+    real(dp) :: CenterMass
+    real(dp) :: ObjectMass
+    real(dp) :: ObjectMass_min
+    real(dp) :: ObjectMass_max
    
-    real :: e
-    real :: e_min
-    real :: e_max
-    real :: i
-    real :: i_min
-    real :: i_max
-    real :: nue
-    real :: nue_min
-    real :: nue_max
-    real :: omega
-    real :: omega_min
-    real :: omega_max
-    real :: omegabig
-    real :: omegabig_min
-    real :: omegabig_max
-    
+    real(dp) :: e
+    real(dp) :: e_min
+    real(dp) :: e_max
+    real(dp) :: i
+    real(dp) :: i_min
+    real(dp) :: i_max
+    real(dp) :: nue
+    real(dp) :: nue_min
+    real(dp) :: nue_max
+    real(dp) :: omega
+    real(dp) :: omega_min
+    real(dp) :: omega_max
+    real(dp) :: omegabig
+    real(dp) :: omegabig_min
+    real(dp) :: omegabig_max
+   
+    integer :: blender_limit 
     integer :: Iterations
     integer :: ObjectCount
   end type boundaryconditions
@@ -42,7 +46,8 @@ contains
     integer :: unit, ios
     character(len=256) ::filepath
     character(len=256) ::attribute
-    real(kind=kind(1.0d0)) :: attribute_value
+    !real(dp) :: attribute_value
+    character(len=256) :: attribute_value
 
     open(newunit=unit, file=filepath, status="old", action="read")
 
@@ -60,76 +65,82 @@ contains
 
       select case (attribute)
         case ("a")
-          bc%a = attribute_value
+          read(attribute_value,*) bc%a
           
         case ("a_min")
-          bc%a_min = attribute_value
+          read(attribute_value,*) bc%a_min 
 
         case ("a_max")
-          bc%a_max = attribute_value
+          read(attribute_value,*) bc%a_max 
+
+        case("BlenderLimit")
+          read(attribute_value,*) bc%blender_limit
 
         case ("CenterMass")
-          bc%CenterMass = attribute_value
+          read(attribute_value,*) bc%CenterMass 
        
         case ("e")
-          bc%e = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%e
 
         case ("e_min")
-          bc%e_min = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%e_min
 
         case ("e_max")
-          bc%e_max = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%e_max
 
         case ("i")
-          bc%i = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%i
 
         case ("i_min")
-          bc%i_min = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%i_min
 
         case ("i_max")
-          bc%i_max = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%i_max
 
         case ("Iterations")
-          bc%Iterations = int(attribute_value)
+          read(attribute_value,*) bc%Iterations
 
         case ("nue")
-          bc%nue = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%nue
 
         case ("nue_min")
-          bc%nue_min = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%nue_min
 
         case ("nue_max")
-          bc%nue_max = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%nue_max
 
         case ("ObjectCount")
-          bc%ObjectCount = int(attribute_value)
+          read(attribute_value,*) bc%ObjectCount
 
         case ("ObjectMass")
-          bc%ObjectMass = attribute_value
+          read(attribute_value,*) bc%ObjectMass
 
         case ("ObjectMass_min")
-          bc%ObjectMass_min = attribute_value
+          read(attribute_value,*) bc%ObjectMass_min
 
         case ("ObjectMass_max")
-          bc%ObjectMass_max = attribute_value
+          read(attribute_value,*) bc%ObjectMass_max
 
         case ("omega")
-          bc%omega = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omega
 
         case ("omega_min")
-          bc%omega_min = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omega_min
 
         case ("omega_max")
-          bc%omega_max = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omega_max
 
         case ("omegaBig")
-          bc%omegabig = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omegabig
 
         case ("omegaBig_min")
-          bc%omegabig_min = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omegabig_min
 
         case ("omegaBig_max")
-          bc%omegabig_max = real(attribute_value,kind=4)
+          read(attribute_value,*) bc%omegabig_max
+        
+        case("outputDirectory")
+          bc%output_directory = attribute_value
 
         case default
           print *, "Unknown command --> ", attribute, attribute_value

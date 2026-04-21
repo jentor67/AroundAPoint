@@ -3,8 +3,10 @@ CenterMass 1.988475E30
 e 0.0167086
 i 7.155
 Iterations 31557600
+BlenderLimit 2000
 nue 375.5
 ObjectCount 2
 ObjectMass 5.97217E24
 omega 114.20783
 omegaBig -11.26064
+outputDirectory "/mnt/kdrive/"
