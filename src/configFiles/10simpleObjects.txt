@@ -5,7 +5,7 @@ e_min 0.0
 e_max .1
 i_min 0.0
 i_max 2
-Iterations 100000
+Iterations 10000000
 BlenderLimit 2000
 nue_min 0
 nue_max 360

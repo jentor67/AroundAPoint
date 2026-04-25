@@ -14,23 +14,22 @@ Program main
    !integer :: units(100000)
    integer, allocatable :: units(:)
    integer, allocatable :: units_blender(:)
-   integer :: n, m, particles, stat, temp_id
+   integer :: n, m, k, particles, stat, temp_id
    integer :: n_blender, n_blender_div, n_blender_limit
 
    logical :: blender
 
    real(dp) :: c, perCur
    real(dp) :: r
-   !real(dp) :: fx, fy, fz
+   real(dp) :: fx, fy, fz
    real(dp) :: fxsum, fysum, fzsum
    real(dp) :: startX, startY, startZ
-
    real(dp) :: start_time, end_time
    type(particle), allocatable :: partarray(:)
 
    !************************************************* 
+   call cpu_time(start_time) 
 
-   call cpu_time(start_time)
 
    ! Get config file
    n = command_argument_count()
@@ -137,43 +136,33 @@ Program main
      end if
      
      !  *****START of MAIN loop******
-     !do m = 1, particles
-     do concurrent (m = 1: particles)
+     do m = 1, particles
 
-       call forcevectorloop(partarray, m, particles, &
-               fxsum, fysum, fzsum)
-       !if( partarray(m)%mass > 0.0 ) then
-       !
-       !  fxsum = 0
-       !  fysum = 0
-       !  fzsum = 0
-       !
-       !  do k = 1, particles
-       !
-       !    if( k /= m .and. partarray(k)%mass > 0.0) then
-       !      call forcevector(partarray(m),partarray(k), fx, fy, fz)
-       !      fxsum = fxsum + fx
-       !      fysum = fysum + fy
-       !      fzsum = fzsum + fz
-       !    end if
-       !
-       !  end do
-       !
-       partarray(m)%fx = fxsum
-       partarray(m)%fy = fysum
-       partarray(m)%fz = fzsum
+       if( partarray(m)%mass > 0.0 ) then
 
-       !end if
-       
+         fxsum = 0
+         fysum = 0
+         fzsum = 0
+
+         do k = 1, particles
+
+           if( k /= m .and. partarray(k)%mass > 0.0) then
+             call forcevector(partarray(m),partarray(k), fx, fy, fz)
+             fxsum = fxsum + fx
+             fysum = fysum + fy
+             fzsum = fzsum + fz
+           end if
+
+         end do
+
+         call velocitychange(partarray(m), fxsum,fysum,fzsum)
+         call positionchange(partarray(m))
+
+       end if
+
      end do
      !  ******End of Main loop*******
-    
-     !  *****update velocity and position 
-     do m = 1, particles
-       call velocitychange(partarray(m))
-       call positionchange(partarray(m))
-     end do 
-     ! ******************************
+
 
      !  test if there are any collisions
      call collisionTest(partarray,particles)
@@ -199,7 +188,7 @@ Program main
       close(units_blender(n))
    end do
 
-
    call cpu_time(end_time)
    print *, "Elapsed CPU time:", end_time - start_time, "seconds"
+
 End Program main

@@ -6,8 +6,8 @@ module gravitymodule
   use readconfigmodule
   implicit none
 
-  public :: acceleration, distance, distance_p
-  public :: valueLargeBody, forcevector, forcevectorloop
+  public :: acceleration, distance
+  public :: valueLargeBody, forcevector
   public :: velocitychange, getpartparm, printparticle, printparticles
   public :: collisionTest
 
@@ -23,9 +23,6 @@ module gravitymodule
     real(dp) :: u
     real(dp) :: v
     real(dp) :: w
-    real(dp) :: fx
-    real(dp) :: fy
-    real(dp) :: fz
     real(dp) :: omega
     real(dp) :: e
     real(dp) :: i
@@ -262,17 +259,17 @@ contains
   end subroutine startPointVelocity
 
 
-  subroutine velocitychange(sel)
-    real(dp) :: masstime
+  subroutine velocitychange(sel, fx, fy, fz)
+    real(dp) :: fx, fy, fz, masstime
     type(particle) sel 
 
     ! f=ma --> a=f/m
     !dv = a*dt --> f/m*dt
     masstime = timedisp/sel%mass
 
-    sel%u = sel%u + sel%fx*masstime
-    sel%v = sel%v + sel%fy*masstime
-    sel%w = sel%w + sel%fz*masstime
+    sel%u = sel%u+fx*masstime
+    sel%v = sel%v+fy*masstime
+    sel%w = sel%w+fz*masstime
 
   end subroutine velocitychange
 
@@ -301,26 +298,26 @@ contains
     type(particle) a, b
     real(dp) :: r  ! good
 
+    !write(*,*) "TEST",b%x, r
+
     r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
+    !write(*,*) "radius:",a%x, a%y, a%z, b%x, b%y, b%z, r
   end function
 
 
-  pure function distance_p(a, b) result(r) 
-    type(particle), intent(in) :: a, b
-    real(dp) :: r  ! good
+  subroutine forcevector(a, b, fx, fy, fz) 
+    real(dp) :: fx, fy, fz, dis1,force, constant
+    type(particle) a, b
 
-    r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
+    dis1 = distance(a,b)
 
-  end function
+    ! test if colision
+    !if( dis1 < (a%radius+b%radius) ) then
+    !        write(*,*) "Collision distance ", dis1, a%radius, b%radius
+    !end if
 
-
-  pure subroutine forcevector(a, b, fx, fy, fz) 
-    real(dp), intent(out) :: fx, fy, fz
-    real(dp) dis1,force, constant
-    type(particle), intent(in) :: a, b
-
-    dis1 = distance_p(a,b)
-
+    !write(*,*) "Force",gcu, a%mass, b%mass, dis1
+    !force = gcu*a%mass/dis1*b%mass/dis1 !*b%mass/(dis1**2)
     force = gcu*a%mass*b%mass/(dis1**2)
     
     constant = force/dis1
@@ -328,40 +325,12 @@ contains
     fx = constant*(b%x-a%x)
     fy = constant*(b%y-a%y)
     fz = constant*(b%z-a%z)
+    !write(*,*) "fx: ", fx, " fy: ",fy, " fz: ", fz, " A-mass: ", a%mass, " B-mass: ", b%mass, " dist: ", dis1
     
   end subroutine forceVector
 
 
-  pure subroutine forcevectorloop(sel, itest, n_particles, &
-                  fxsum, fysum, fzsum)
-    integer :: k
-    integer, intent(in) :: itest, n_particles
-    type(particle), intent(in) :: sel(n_particles)
-    real(dp) :: fx, fy, fz
-    real(dp), intent(out) :: fxsum, fysum, fzsum
-
-    fxsum = 0
-    fysum = 0
-    fzsum = 0
-
-    if( sel(itest)%mass > 0.0 ) then
-
-      do k = 1, n_particles
-
-        if( k /= itest .and. sel(k)%mass > 0.0) then
-          call forcevector(sel(itest),sel(k), fx, fy, fz)
-          fxsum = fxsum + fx
-          fysum = fysum + fy
-          fzsum = fzsum + fz
-        end if
-
-      end do
-
-    end if
-
-  end subroutine forcevectorloop
-
-
+  !subroutine printparticles(sel, io, particles)
   subroutine printparticles(iteration, sel, units, particles, b_blender)
     logical :: b_blender
 
@@ -380,6 +349,7 @@ contains
       !blender_factor = 1000000000
     end if
 
+    !write(*,*) particles, sel(1)%x
     do n = 1, particles
 
       !if( sel(n)%mass > 0.0 ) then
@@ -426,8 +396,7 @@ contains
 
     ra = (1+sel%e)*sel%a ! distance at apogee (m)
 
-    ! standard gravitational parameters
-    sel%mue = real(gcu*(centerMass+sel%mass),kind=4) 
+    sel%mue = real(gcu*(centerMass+sel%mass),kind=4) ! standard gravitational parameters
 
     T = 2 * pie * (( (sel%a**3) /sel%mue )**.5) ! Peroid
 
