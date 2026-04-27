@@ -10,9 +10,11 @@ module constantsmodule
   !real(kind=kind(1.0d0)) :: density_material = 11340.0
 contains
 
-  function john() result(t)
-    integer :: t
-    t=3
-  end function john
+  subroutine john()
+    integer :: i = 0
+
+    i = i +1
+  end subroutine john
+
 
 end module constantsmodule

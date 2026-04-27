@@ -11,8 +11,6 @@ Program main
    character(len=100) :: filename_blender
    character(len=256) :: config_file_path
 
-   !integer, dimension(100000) :: units
-   !integer :: units(100000)
    integer, allocatable :: units(:)
    integer, allocatable :: units_blender(:)
    integer :: n, m, particles, stat, temp_id
@@ -22,8 +20,6 @@ Program main
 
    real(dp) :: c, perCur
    real(dp) :: r
-   !real(dp) :: fx, fy, fz
-   !real(dp) :: fxsum, fysum, fzsum
    real(dp) :: startX, startY, startZ
 
    real(dp) :: start_time, end_time
@@ -140,38 +136,6 @@ Program main
      ! *** call force loop **
      call force_loop(partarray) 
 
-     !  *****START of MAIN loop******
-     !do m = 1, particles
-     !do concurrent (m = 1: particles)
-
-       !call forcevectorloop(partarray, m, particles, &
-       !        fxsum, fysum, fzsum)
-       !if( partarray(m)%mass > 0.0 ) then
-       !
-       !  fxsum = 0
-       !  fysum = 0
-       !  fzsum = 0
-       !
-       !  do k = 1, particles
-       !
-       !    if( k /= m .and. partarray(k)%mass > 0.0) then
-       !      call forcevector(partarray(m),partarray(k), fx, fy, fz)
-       !      fxsum = fxsum + fx
-       !      fysum = fysum + fy
-       !      fzsum = fzsum + fz
-       !    end if
-       !
-       !  end do
-       !
-       !partarray(m)%fx = fxsum
-       !partarray(m)%fy = fysum
-       !partarray(m)%fz = fzsum
-
-       !end if
-       
-     !end do
-     !  ******End of Main loop*******
-    
      !  *****update velocity and position 
      do m = 1, particles
        call velocitychange(partarray(m))

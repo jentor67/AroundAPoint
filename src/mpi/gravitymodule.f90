@@ -6,7 +6,7 @@ module gravitymodule
   use readconfigmodule
   implicit none
 
-  public :: acceleration, distance, distance_p
+  public :: acceleration, distance
   public :: valueLargeBody, forcevector, forcevectorloop
   public :: velocitychange, getpartparm, printparticle, printparticles
   public :: collisionTest
@@ -14,7 +14,6 @@ module gravitymodule
   real(dp) :: mass 
   real(dp) :: timedisp = 1 !.000001
   real(dp) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
-  !real(kind=kind(1.0d0)) :: mass1 = 1.989E30!; // kg
 
   type particle
     real(dp) :: x
@@ -98,15 +97,6 @@ contains
     real(dp) :: ra, rp
     real(dp) :: T
 
-    ! ***** Earth parameters *****
-    !sel%omega = 114.20783 ! randomArgumentOfPeriapsis()
-    !sel%e = 0.0167086 ! randomEccentricity() 
-    !sel%i = 7.155 ! randomInclination() 
-    !sel%omegaBIG = -11.26064 ! randomLongitudeOfAscendingNode()
-    !sel%mass = 5.97217E24 + 7.346E22  ! randomMass(4.0, 6.0)
-    !sel%a = 1.49598023E11 ! randomSimiMajorAxis(.000005, .00001)
-    !sel%b = sel%a*((1-(sel%e**2))**.5);
-    !sel%nue = 357.5 !randomTrueAnomaly() 
 
     ! test if Argument of Periapsis is greater than -9999.9
     if( cf%omega > -9999.9 ) then
@@ -298,19 +288,10 @@ contains
 
 
   function distance(a, b) result(r) 
-    type(particle) a, b
-    real(dp) :: r  ! good
-
-    r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
-  end function
-
-
-  function distance_p(a, b) result(r) 
     type(particle) :: a, b
     real(dp) :: r  ! good
 
     r = ( (b%x-a%x)**2 + (b%y-a%y)**2 + (b%z-a%z)**2 )**.5
-
   end function
 
 
@@ -319,7 +300,7 @@ contains
     real(dp) dis1,force, constant
     type(particle) :: a, b
 
-    dis1 = distance_p(a,b)
+    dis1 = distance(a,b)
 
     force = gcu*a%mass*b%mass/(dis1**2)
     

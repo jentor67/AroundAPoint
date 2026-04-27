@@ -18,6 +18,7 @@ program mpi_scatter_gather
 
     call cpu_time(start_time)
 
+    !  MPI initial
     call MPI_Init(ierr)
     call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
     call MPI_Comm_size(MPI_COMM_WORLD, nsize, ierr)
@@ -47,7 +48,6 @@ program mpi_scatter_gather
 
     ! Each process computes: square the numbers
     do i = 1, local_n
-        !local_result(i) = start_inner_loop(local_data, N) ! local_data(i)**2
         local_result(i) = start_inner_loop(local_data)
     end do
 
