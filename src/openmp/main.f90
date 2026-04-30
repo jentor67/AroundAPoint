@@ -18,8 +18,8 @@ Program main
 
    logical :: blender
 
-   real(dp) :: c, perCur
-   real(dp) :: r
+   !real(dp) :: c, perCur
+   !real(dp) :: r
    real(dp) :: startX, startY, startZ
 
    real(dp) :: start_time, end_time
@@ -149,12 +149,12 @@ Program main
    end do
    write(*,*) "End of Iterations"
 
-   r = ( ((startX-partarray(2)%x)**2) + &
-         ((startY-partarray(2)%y)**2) + &
-         ((startZ-partarray(2)%z)**2) )**.5
-   c = 2.0*pie*partarray(2)%a
+   !r = ( ((startX-partarray(2)%x)**2) + &
+   !      ((startY-partarray(2)%y)**2) + &
+   !      ((startZ-partarray(2)%z)**2) )**.5
+   !c = 2.0*pie*partarray(2)%r
 
-   perCur = 100*r/c
+   !perCur = 100*r/c
 
    ! print final values
    !do n = 1, particles

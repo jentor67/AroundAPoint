@@ -25,16 +25,16 @@ module gravitymodule
     real(dp) :: fx
     real(dp) :: fy
     real(dp) :: fz
-    real(dp) :: omega
-    real(dp) :: e
-    real(dp) :: i
-    real(dp) :: omegaBIG
+    !real(dp) :: omega
+    !real(dp) :: e
+    !real(dp) :: i
+    !real(dp) :: omegaBIG
     real(dp) :: radius
     real(dp) :: mass
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: nue
-    real(dp) :: mue
+    !real(dp) :: a
+    !real(dp) :: b
+    !real(dp) :: nue
+    !real(dp) :: mue
   end type particle
 
 
@@ -95,36 +95,37 @@ contains
     type(particle) sel
 
     real(dp) :: ra, rp
+    real(dp) :: a, b, e, i, nue, mue, omega, omegaBIG
     real(dp) :: T
 
 
     ! test if Argument of Periapsis is greater than -9999.9
     if( cf%omega > -9999.9 ) then
-            sel%omega = cf%omega
+            omega = cf%omega
     else
-            sel%omega = randomArgumentOfPeriapsis(cf%omega_min, &
+            omega = randomArgumentOfPeriapsis(cf%omega_min, &
                     cf%omega_max)
     end if
 
     ! test if Eccentricity > -9999.9
     if( cf%e > -9999.9 ) then
-            sel%e = cf%e
+            e = cf%e
     else
-            sel%e = randomEccentricity(cf%e_min, cf%e_max)
+            e = randomEccentricity(cf%e_min, cf%e_max)
     end if
 
     ! test if Inclination > -9999.9
     if( cf%i > -9999.9 ) then
-            sel%i = cf%i
+            i = cf%i
     else
-            sel%i =  randomInclination(cf%i_min, cf%i_max)
+            i =  randomInclination(cf%i_min, cf%i_max)
     end if
 
     ! test if Logitude of Ascending Node is > -9999.9
     if( cf%omegaBIG > -9999.9 ) then
-            sel%omegaBIG = cf%omegaBIG
+            omegaBIG = cf%omegaBIG
     else
-            sel%omegaBIG = randomLongitudeOfAscendingNode( &
+            omegaBIG = randomLongitudeOfAscendingNode( &
                     cf%omegabig_min, cf%omegabig_max)
     end if
 
@@ -141,29 +142,29 @@ contains
 
     ! test if given a sigle SemiMajorAxis
     if( cf%a > -9999.9 ) then
-            sel%a = cf%a
+            a = cf%a
     else
-            sel%a = randomSemiMajorAxis(cf%a_min, cf%a_max)
+            a = randomSemiMajorAxis(cf%a_min, cf%a_max)
     end if
 
     ! test if given a single True Anomaly
     if( cf%nue > -9999.9) then
-            sel%nue = cf%nue
+            nue = cf%nue
     else
-            sel%nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
+            nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
     end if
     
-    write(*,*) "i: ", sel%i, "  omegaBig: ",  sel%omegaBIG, &
-     "  omega: ",sel%omega, "  nue: ", sel%nue, "  e: ",sel%e, &
-     "  a: ",sel%a, "  mass: ", sel%mass
+    write(*,*) "i: ", i, "  omegaBig: ",  omegaBIG, &
+     "  omega: ",omega, "  nue: ", nue, "  e: ",e, &
+     "  a: ",a, "  mass: ", sel%mass
 
-    sel%b = sel%a*((1-(sel%e**2))**.5)
+    b = a*((1-(e**2))**.5)
 
-    call radiusVelocity(rp, ra, T, sel)
+    call radiusVelocity(rp, ra, T, sel, a, e, mue)
 
-    write(*,*) "After radiusVelocity: ", rp, ra, sel%mue, T
+    write(*,*) "After radiusVelocity: ", rp, ra, mue, T
 
-    call startPointVelocity(sel)
+    call startPointVelocity(sel, a, e, i, mue, nue, omega, omegaBIG)
     write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
 
   end subroutine getpartparm
@@ -177,19 +178,20 @@ contains
 
   end subroutine positionchange
 
-  subroutine startPointVelocity(sel)
+  subroutine startPointVelocity(sel, a, e, i, mue, nue, omega, omegaBIG)
     type(particle) sel
     real(dp) :: r, nue_radians, vr, v0
     real(dp) :: con1
     real(dp) :: vmag  ! velocity magnitue
-    real(dp) :: mue  ! G*M(centerMass)
+    !real(dp) :: mue  ! G*M(centerMass)
     real(dp) :: xt, yt, zt, ut, vt, wt;
+    real(dp) :: a, e, i, mue, nue, omega, omegaBIG
 
     ! *** Rotate nue  degrees ***
-    nue_radians = pie*sel%nue/180
+    nue_radians = pie*nue/180
 
     ! distance from the focus(where the star is)
-    r = sel%a*( 1- (sel%e**2) ) / (1 + sel%e * cos( nue_radians) )
+    r = a*( 1- (e**2) ) / (1 + e * cos( nue_radians) )
 
     !  x y location
     sel%x = r*cos(nue_radians)
@@ -197,17 +199,17 @@ contains
     sel%z = 0
 
     ! ***determine the velocity at the true anomaly sel%nue****
-    vmag = ( sel%mue*( (2/r) - (1/sel%a) ) )**.5 ! velocity magnitude
+    vmag = ( mue*( (2/r) - (1/a) ) )**.5 ! velocity magnitude
     mue = gcu*centerMass  !mue based on the centerMass or sun
 
     ! constant
-    con1 = (  mue/( sel%a*(1-(sel%e**2)) ) )**.5
+    con1 = (  mue/( a*(1-(e**2)) ) )**.5
 
     !Radial component( toward/away from the star
-    vr = con1*sel%e*sin(nue_radians) 
+    vr = con1*e*sin(nue_radians) 
     
     !Transverse component(sideways, along the orbit
-    v0 = con1*( 1 + sel%e*cos(nue_radians) )
+    v0 = con1*( 1 + e*cos(nue_radians) )
 
     sel%u = vr*cos(nue_radians) - v0*sin(nue_radians)
     sel%v = vr*sin(nue_radians) + v0*cos(nue_radians)
@@ -217,34 +219,34 @@ contains
 
     !// Rotate omega  degrees
     ! position
-    call rotate2D(sel%x, sel%y, sel%omega, xt, yt)
+    call rotate2D(sel%x, sel%y, omega, xt, yt)
     sel%x = xt
     sel%y = yt
 
     ! velocity
-    call rotate2D(sel%u, sel%v, sel%omega, ut, vt)
+    call rotate2D(sel%u, sel%v, omega, ut, vt)
     sel%u = ut
     sel%v = vt
 
     !// Rotate i degrees
     ! position
-    call rotate2D(sel%y, sel%z, sel%i, yt, zt)
+    call rotate2D(sel%y, sel%z, i, yt, zt)
     sel%y = yt
     sel%z = zt
 
     ! velocity
-    call rotate2D(sel%v, sel%w,  sel%i, vt, wt)
+    call rotate2D(sel%v, sel%w, i, vt, wt)
     sel%v = vt
     sel%w = wt
 
     !// Rotate OMEGA degrees
     ! position
-    call rotate2D(sel%x, sel%y, sel%omegaBIG, xt, yt)
+    call rotate2D(sel%x, sel%y, omegaBIG, xt, yt)
     sel%x = xt
     sel%y = yt
 
     ! velocity
-    call rotate2D(sel%u, sel%v, sel%omegaBIG, ut, vt)
+    call rotate2D(sel%u, sel%v, omegaBIG, ut, vt)
     sel%u = ut
     sel%v = vt
 
@@ -399,18 +401,19 @@ contains
   end subroutine printparticle
 
 
-  subroutine radiusVelocity(rp, ra, T, sel)
+  subroutine radiusVelocity(rp, ra, T, sel, e, a, mue)
     type(particle) sel
     real(dp) :: rp, ra, T
+    real(dp) :: e, a, mue
 
-    rp = (1-sel%e)*sel%a ! distance at perigee (m)
+    rp = (1-e)*a ! distance at perigee (m)
 
-    ra = (1+sel%e)*sel%a ! distance at apogee (m)
+    ra = (1+e)*a ! distance at apogee (m)
 
     ! standard gravitational parameters
-    sel%mue = real(gcu*(centerMass+sel%mass),kind=4) 
+    mue = real(gcu*(centerMass+sel%mass),kind=4) 
 
-    T = 2 * pie * (( (sel%a**3) /sel%mue )**.5) ! Peroid
+    T = 2 * pie * (( (a**3) /mue )**.5) ! Peroid
 
   end subroutine radiusVelocity
 
