@@ -154,18 +154,18 @@ contains
             nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
     end if
     
-    write(*,*) "i: ", i, "  omegaBig: ",  omegaBIG, &
-     "  omega: ",omega, "  nue: ", nue, "  e: ",e, &
-     "  a: ",a, "  mass: ", sel%mass
+    !write(*,*) "i: ", i, "  omegaBig: ",  omegaBIG, &
+    ! "  omega: ",omega, "  nue: ", nue, "  e: ",e, &
+    ! "  a: ",a, "  mass: ", sel%mass
 
     b = a*((1-(e**2))**.5)
 
     call radiusVelocity(rp, ra, T, sel, a, e, mue)
 
-    write(*,*) "After radiusVelocity: ", rp, ra, mue, T
+    !write(*,*) "After radiusVelocity: ", rp, ra, mue, T
 
     call startPointVelocity(sel, a, e, i, mue, nue, omega, omegaBIG)
-    write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
+    !write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
 
   end subroutine getpartparm
 
@@ -393,10 +393,10 @@ contains
     r =  magnitude(sel%x, sel%y, sel%z) 
     v = magnitude(sel%u, sel%v, sel%w)
 
-    write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, &
-            sel%u, sel%v, sel%w, v, & 
-            "mass: ", sel%mass, " radius: ",sel%radius
-    !        sel%mass
+    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, &
+    !        sel%u, sel%v, sel%w, v, & 
+    !        "mass: ", sel%mass, " radius: ",sel%radius
+    !!        sel%mass
 
   end subroutine printparticle
 

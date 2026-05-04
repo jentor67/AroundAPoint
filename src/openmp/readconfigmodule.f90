@@ -151,8 +151,8 @@ contains
 
     close(unit)
     
-    write(*,*) bc%CenterMass, bc%Iterations, bc%ObjectMass_min, &
-          bc%ObjectMass_max, bc%ObjectCount
+    !write(*,*) bc%CenterMass, bc%Iterations, bc%ObjectMass_min, &
+    !      bc%ObjectMass_max, bc%ObjectCount
   
   end subroutine read_config_file
 

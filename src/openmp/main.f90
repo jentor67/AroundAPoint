@@ -1,19 +1,21 @@
 !> \\file main.f95
 Program main
    use readconfigmodule
+   use blenderconfigmodule
    use startparametersmodule
    use constantsmodule
    use gravitymodule
    use openmp_loop
+   use omp_lib
    implicit none
 
-   character(len=100) :: filename
+   !character(len=100) :: filename
    character(len=100) :: filename_blender
    character(len=256) :: config_file_path
 
    integer, allocatable :: units(:)
    integer, allocatable :: units_blender(:)
-   integer :: n, m, particles, stat, temp_id
+   integer :: n, particles, stat, temp_id
    integer :: n_blender, n_blender_div, n_blender_limit
 
    logical :: blender
@@ -27,7 +29,8 @@ Program main
 
    !************************************************* 
 
-   call cpu_time(start_time)
+   !call cpu_time(start_time)
+   start_time = omp_get_wtime()
 
    ! Get config file
    n = command_argument_count()
@@ -42,6 +45,8 @@ Program main
    end if
 
    call read_config_file(config_file_path)
+
+   call write_blender_file()
 
    allocate(partarray(bc%ObjectCount))
 
@@ -62,19 +67,19 @@ Program main
    ! get initial positions of particles
    do n = 1, particles
      ! **** create main data file ****
-     write(filename, '(A,I8.8,A)') trim(bc%output_directory) &
-             // 'file_', n, '.dat'
+     !write(filename, '(A,I8.8,A)') trim(bc%output_directory) &
+     !        // 'file_', n, '.dat'
 
-     open(newunit=temp_id, file=filename, status='replace', &
-             action='write', iostat=stat)
+     !open(newunit=temp_id, file=filename, status='replace', &
+     !        action='write', iostat=stat)
 
-     if (stat /= 0) then
-        print *, "Error opening file, iostat = ", stat
-        stop
-     end if
+     !if (stat /= 0) then
+     !   print *, "Error opening file, iostat = ", stat
+     !   stop
+     !end if
      
-     write(temp_id,'(A)') "frame|x|y|z|u|v|w"
-     units(n) = temp_id
+     !write(temp_id,'(A)') "frame|x|y|z|u|v|w"
+     !units(n) = temp_id
      ! ****    ****
 
      ! **** create blender file ****
@@ -122,7 +127,7 @@ Program main
    write(*,*) "Start of Iterations"
    do n = 1, bc%Iterations
      blender= .false.
-     call printparticles(n, partarray, units, particles,blender)
+     !call printparticles(n, partarray, units, particles,blender)
 
      ! test if writing to blender
      if( modulo(n,n_blender_div) == 0 ) then
@@ -136,11 +141,15 @@ Program main
      ! *** call force loop **
      call force_loop(partarray) 
 
-     !  *****update velocity and position 
-     do m = 1, particles
-       call velocitychange(partarray(m))
-       call positionchange(partarray(m))
-     end do 
+     !  *****update velocity and position
+     call velocity_loop(partarray)
+
+     call position_loop(partarray)
+
+     !do m = 1, particles
+     !  call velocitychange(partarray(m))
+     !  call positionchange(partarray(m))
+     !end do 
      ! ******************************
 
      !  test if there are any collisions
@@ -163,11 +172,12 @@ Program main
 
 
    do n = 1, particles
-      close(units(n))
+      !close(units(n))
       close(units_blender(n))
    end do
 
 
-   call cpu_time(end_time)
+   !call cpu_time(end_time)
+   end_time = omp_get_wtime()
    print *, "Elapsed CPU time:", end_time - start_time, "seconds"
 End Program main
