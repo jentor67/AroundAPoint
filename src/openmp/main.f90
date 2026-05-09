@@ -46,14 +46,13 @@ Program main
 
    call read_config_file(config_file_path)
 
-   call write_blender_file()
-
    allocate(partarray(bc%ObjectCount))
 
    ! clear working data
    call execute_command_line("rm -f " // trim(bc%output_directory) &
            // "*.dat")
 
+   call write_blender_file()
 
    centerMass =  bc%CenterMass
 
@@ -94,25 +93,13 @@ Program main
         stop
      end if
      
-     write(temp_id,'(A)') "frame|x|y|z|u|v|w"
+     write(temp_id,'(A)') "frame|x|y|z|u|v|w|radius"
      units_blender(n) = temp_id
-
-     ! ****    ****
 
      if( n > 1 ) call getpartparm(partarray(n),bc) 
 
-     !write(*,*) "Partical", n, particles, partarray(n)%omega, &
-     !    partarray(n)%e, partarray(n)%i, partarray(n)%omegaBIG, &
-     !    partarray(n)%mass, partarray(n)%a, partarray(n)%b, &
-     !    partarray(n)%nue, partarray(n)%mue
-
-     !write(*,*) " "
    end do
 
-   ! print initial values
-   !do n = 1, particles
-   !  call printparticle( n, partarray(n) )
-   !end do
 
    startX = partarray(2)%x
    startY = partarray(2)%y
@@ -125,6 +112,7 @@ Program main
    ! ****************************
 
    write(*,*) "Start of Iterations"
+
    do n = 1, bc%Iterations
      blender= .false.
      !call printparticles(n, partarray, units, particles,blender)
@@ -146,33 +134,16 @@ Program main
 
      call position_loop(partarray)
 
-     !do m = 1, particles
-     !  call velocitychange(partarray(m))
-     !  call positionchange(partarray(m))
-     !end do 
-     ! ******************************
-
      !  test if there are any collisions
      call collisionTest(partarray,particles)
      
    end do
+
    write(*,*) "End of Iterations"
 
-   !r = ( ((startX-partarray(2)%x)**2) + &
-   !      ((startY-partarray(2)%y)**2) + &
-   !      ((startZ-partarray(2)%z)**2) )**.5
-   !c = 2.0*pie*partarray(2)%r
 
-   !perCur = 100*r/c
-
-   ! print final values
-   !do n = 1, particles
-     !call printparticle( n, partarray(n) )
-   !end do
-
-
+   !  close blender files
    do n = 1, particles
-      !close(units(n))
       close(units_blender(n))
    end do
 
@@ -180,4 +151,5 @@ Program main
    !call cpu_time(end_time)
    end_time = omp_get_wtime()
    print *, "Elapsed CPU time:", end_time - start_time, "seconds"
+
 End Program main

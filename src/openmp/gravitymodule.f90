@@ -279,6 +279,7 @@ contains
     sel%v=0
     sel%w=0
     sel%mass=cf%CenterMass
+    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
   end subroutine valueLargeBody
 
 
@@ -369,7 +370,8 @@ contains
 
         write(units(n),60) iteration, &
           sel(n)%x/blender_factor, sel(n)%y/blender_factor, &
-          sel(n)%z/blender_factor, sel(n)%u, sel(n)%v, sel(n)%w
+          sel(n)%z/blender_factor, sel(n)%u, sel(n)%v, sel(n)%w, &
+          sel(n)%radius
 
       !end if
 
@@ -381,7 +383,7 @@ contains
     !50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10, &
     !        " ",e17.10)
     60   format (i0, "|", e17.10, "|", e17.10, "|", e17.10, "|", &
-            e17.10, "|", e17.10, "|", e17.10)
+            e17.10, "|", e17.10, "|", e17.10, "|", e17.10)
     !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
 
