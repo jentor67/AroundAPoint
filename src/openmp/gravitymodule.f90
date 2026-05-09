@@ -70,6 +70,7 @@ contains
               sel(n_test)%x = -10000
               sel(n_test)%y = -10000
               sel(n_test)%z = -10000
+              sel(n_test)%radius = ( (sel(n_test)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
             else
               sel(n_test)%mass = sel(n_primary)%mass + &
                       sel(n_test)%mass
@@ -77,6 +78,7 @@ contains
               sel(n_primary)%x = -10000
               sel(n_primary)%y = -10000
               sel(n_primary)%z = -10000
+              sel(n_primary)%radius = ( (sel(n_primary)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
             end if
 
 
