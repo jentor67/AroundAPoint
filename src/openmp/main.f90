@@ -1,7 +1,7 @@
 !> \\file main.f95
 Program main
    use readconfigmodule
-   use blenderconfigmodule
+   !use blenderconfigmodule
    use startparametersmodule
    use constantsmodule
    use gravitymodule
@@ -52,7 +52,7 @@ Program main
    call execute_command_line("rm -f " // trim(bc%output_directory) &
            // "*.dat")
 
-   call write_blender_file()
+   !call write_blender_file()
 
    centerMass =  bc%CenterMass
 
