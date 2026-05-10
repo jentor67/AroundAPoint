@@ -5,13 +5,13 @@ e_min 0.0
 e_max .1
 i_min 0.0
 i_max 1
-Iterations 1200000
+Iterations 12000000
 BlenderLimit 2000
 nue_min 0
 nue_max 360
 ObjectCount 48
-ObjectMass_min 1
-ObjectMass_max 3
+ObjectMass_min .0001
+ObjectMass_max .0003
 omega_min 0
 omega_max 360
 omegaBig_min 0
