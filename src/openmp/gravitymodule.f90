@@ -41,8 +41,8 @@ module gravitymodule
 
 contains
 
-  subroutine collisionTest(sel,n_particals)
-    integer :: n_primary, n_test, n_particals
+  subroutine collisionTest(sel, n_particals, iteration)
+    integer :: n_primary, n_test, n_particals, iteration
 
     real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3)
     
@@ -54,12 +54,12 @@ contains
 
       do n_test = 1, n_particals
 
-        if( n_particals == 2  .and. n_primary == 1) then
+        if( n_particals == 2  .and. n_test ==2 .and. n_primary == 1) then
            dist_two_objects = distance( sel(n_primary), sel(n_test) )
 
            if( dist_two_objects < min_radius ) then
 
-             write(*,*) "min_dist", dist_two_objects
+             write(*,*) "min_dist", iteration, dist_two_objects
              min_radius = dist_two_objects
 
            end if

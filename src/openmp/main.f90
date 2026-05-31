@@ -135,7 +135,7 @@ Program main
      call position_loop(partarray)
 
      !  test if there are any collisions
-     call collisionTest(partarray,particles)
+     call collisionTest(partarray,particles, n)
      
    end do
 

@@ -1,5 +1,5 @@
 a 1.0
-CenterMass 2.0
+CenterMass 20000.0
 e 0
 i 0
 Iterations 31557600
