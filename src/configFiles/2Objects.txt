@@ -1,0 +1,13 @@
+a 1.0
+CenterMass 2.0
+e 0
+i 0
+Iterations 31557600
+BlenderLimit 2000
+nue 0
+ObjectCount 2
+ObjectMass 1.0
+omega 0
+outputDirectory "/mnt/kdrive/"
+omegaBig 0
+

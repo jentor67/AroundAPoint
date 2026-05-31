@@ -14,6 +14,7 @@ module gravitymodule
   real(dp) :: mass 
   real(dp) :: timedisp = 1 !.000001
   real(dp) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
+  real(dp) :: min_radius =1.0E30
 
   type particle
     real(dp) :: x
@@ -52,6 +53,17 @@ contains
     do n_primary = 1, n_particals
 
       do n_test = 1, n_particals
+
+        if( n_particals == 2  .and. n_primary == 1) then
+           dist_two_objects = distance( sel(n_primary), sel(n_test) )
+
+           if( dist_two_objects < min_radius ) then
+
+             write(*,*) "min_dist", dist_two_objects
+             min_radius = dist_two_objects
+
+           end if
+        end if
 
         if( n_primary /= n_test .and. &
               sel(n_primary)%mass > 0.0 .and. &
