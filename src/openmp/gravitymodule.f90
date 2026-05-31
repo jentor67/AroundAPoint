@@ -43,9 +43,10 @@ contains
   subroutine collisionTest(sel,n_particals)
     integer :: n_primary, n_test, n_particals
 
-    real(dp) :: dist_two_objects
+    real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3)
     
     type(particle) sel(n_particals)
+
 
 
     do n_primary = 1, n_particals
@@ -62,24 +63,31 @@ contains
           if( dist_two_objects < &
                   ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
             write(*,*) "Collision"
+            
+            p1 = [sel(n_test)%x, sel(n_test)%y, sel(n_test)%z]
+            p2 = [sel(n_primary)%x, sel(n_primary)%y, sel(n_primary)%z]
+            vel1 = [sel(n_test)%u, sel(n_test)%v, sel(n_test)%w]
+            vel2 = [sel(n_primary)%w, sel(n_primary)%v, sel(n_primary)%w]
+
+            call sphere_collision_3d(p1, p2, vel1, vel2, sel(n_test)%mass, sel(n_primary)%mass)
             ! determine the largest object
-            if( sel(n_primary)%mass >= sel(n_test)%mass ) then
-              sel(n_primary)%mass = sel(n_primary)%mass + &
-                      sel(n_test)%mass
-              sel(n_primary)%radius = ( (sel(n_primary)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
-              sel(n_test)%mass = -1
-              sel(n_test)%x = -10000
-              sel(n_test)%y = -10000
-              sel(n_test)%z = -10000
-            else
-              sel(n_test)%mass = sel(n_primary)%mass + &
-                      sel(n_test)%mass
-              sel(n_test)%radius = ( (sel(n_test)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
-              sel(n_primary)%mass = -1
-              sel(n_primary)%x = -10000
-              sel(n_primary)%y = -10000
-              sel(n_primary)%z = -10000
-            end if
+            !if( sel(n_primary)%mass >= sel(n_test)%mass ) then
+            !  sel(n_primary)%mass = sel(n_primary)%mass + &
+            !          sel(n_test)%mass
+            !  sel(n_primary)%radius = ( (sel(n_primary)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
+            !  sel(n_test)%mass = -1
+            !  sel(n_test)%x = -10000
+            !  sel(n_test)%y = -10000
+            !  sel(n_test)%z = -10000
+            !else
+            !  sel(n_test)%mass = sel(n_primary)%mass + &
+            !          sel(n_test)%mass
+            !  sel(n_test)%radius = ( (sel(n_test)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
+            !  sel(n_primary)%mass = -1
+            !  sel(n_primary)%x = -10000
+            !  sel(n_primary)%y = -10000
+            !  sel(n_primary)%z = -10000
+            !end if
 
 
           end if       

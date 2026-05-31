@@ -85,6 +85,8 @@ contains
 
     if (dist <= 0.0) then
         print *, 'Error: sphere centers coincide'
+        print *, x1
+        print *, x2
         stop
     end if
 

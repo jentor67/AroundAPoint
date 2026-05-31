@@ -1,6 +1,6 @@
-a_min 2 
-a_max 4
-CenterMass 1000
+a_min 3 
+a_max 6
+CenterMass 100
 e_min 0.0
 e_max .1
 i_min 0.0
@@ -10,8 +10,8 @@ BlenderLimit 2000
 nue_min 0
 nue_max 360
 ObjectCount 48
-ObjectMass_min .0001
-ObjectMass_max .0003
+ObjectMass_min 1
+ObjectMass_max 3
 omega_min 0
 omega_max 360
 omegaBig_min 0
