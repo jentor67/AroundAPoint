@@ -5,8 +5,24 @@ module readconfigmodule
   
   public :: read_config_file
 
+  type particle
+    real(dp) :: x
+    real(dp) :: y
+    real(dp) :: z
+    real(dp) :: u
+    real(dp) :: v
+    real(dp) :: w
+    real(dp) :: fx
+    real(dp) :: fy
+    real(dp) :: fz
+    real(dp) :: radius
+    real(dp) :: mass
+  end type particle
+
+
   type boundaryconditions
     character(len=256) ::output_directory
+    character(len=256) ::file_type
 
     real(dp) :: a
     real(dp) :: a_min
@@ -41,13 +57,16 @@ module readconfigmodule
   type(boundaryconditions) :: bc
 contains
 
-  subroutine  read_config_file(filepath)
+  subroutine  read_config_file(filepath, sel)
     implicit none
-    integer :: unit, ios
+    integer :: unit, ios, particle_count
     character(len=256) ::filepath
     character(len=256) ::attribute
-    !real(dp) :: attribute_value
+    real(dp) :: a, b, c, d, e, f, g
     character(len=256) :: attribute_value
+    !type(particle) sel
+    !real, allocatable, intent(out) :: arr(:)
+    type(particle), allocatable, intent(out) :: sel(:)
 
     open(newunit=unit, file=filepath, status="old", action="read")
 
@@ -58,6 +77,7 @@ contains
     bc%nue = -10000.0
     bc%omega = -10000.0
     bc%omegabig = -10000.0
+    particle_count = 1
 
     do
       read(unit, *, iostat=ios) attribute, attribute_value
@@ -99,7 +119,21 @@ contains
 
         case ("Iterations")
           read(attribute_value,*) bc%Iterations
+        
+        case ("LIST")
+          ! read list of objects
+          write(*,*) "LIST", particle_count
+          read(unit, *, iostat=ios) attribute, attribute_value
+          write(*,*) "Attribue Valeu", attribute_value
+          read(attribute_value, *)  a,b,c,d,e,f,g
+          write(*,*) "VALUES",a,b,c,d,e,f,g
+          read(attribute_value, *) sel(particle_count)%x,&
+            sel(particle_count)%y, sel(particle_count)%z,&
+            sel(particle_count)%u, sel(particle_count)%v,&
+            sel(particle_count)%w, sel(particle_count)%mass
 
+          particle_count = particle_count + 1
+        
         case ("nue")
           read(attribute_value,*) bc%nue
 
@@ -111,6 +145,7 @@ contains
 
         case ("ObjectCount")
           read(attribute_value,*) bc%ObjectCount
+          allocate(sel(bc%ObjectCount))
 
         case ("ObjectMass")
           read(attribute_value,*) bc%ObjectMass
@@ -141,6 +176,9 @@ contains
         
         case("outputDirectory")
           bc%output_directory = attribute_value
+
+        case("Type")
+          bc%file_type = attribute_value
 
         case default
           print *, "Unknown command --> ", attribute, attribute_value

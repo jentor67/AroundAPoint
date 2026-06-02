@@ -22,7 +22,7 @@ Program main
 
    !real(dp) :: c, perCur
    !real(dp) :: r
-   real(dp) :: startX, startY, startZ
+   !real(dp) :: startX, startY, startZ
 
    real(dp) :: start_time, end_time
    type(particle), allocatable :: partarray(:)
@@ -44,42 +44,29 @@ Program main
            stop
    end if
 
-   call read_config_file(config_file_path)
+   call read_config_file(config_file_path,partarray)
 
-   allocate(partarray(bc%ObjectCount))
+   !allocate(partarray(bc%ObjectCount))
 
    ! clear working data
    call execute_command_line("rm -f " // trim(bc%output_directory) &
            // "*.dat")
 
-   !call write_blender_file()
-
-   centerMass =  bc%CenterMass
-
    particles = bc%ObjectCount !size(partarray,dim=1)
+   write(*,*) "particle", particles
 
-   call valueLargeBody(partarray(1),bc)
- 
    allocate( units(bc%ObjectCount) )
    allocate( units_blender(bc%ObjectCount) )
 
+
+
+   if( bc%file_type == "RandomCenter" ) then
+      call valueLargeBody(partarray(1),bc)
+      centerMass =  bc%CenterMass
+   end if
+
    ! get initial positions of particles
    do n = 1, particles
-     ! **** create main data file ****
-     !write(filename, '(A,I8.8,A)') trim(bc%output_directory) &
-     !        // 'file_', n, '.dat'
-
-     !open(newunit=temp_id, file=filename, status='replace', &
-     !        action='write', iostat=stat)
-
-     !if (stat /= 0) then
-     !   print *, "Error opening file, iostat = ", stat
-     !   stop
-     !end if
-     
-     !write(temp_id,'(A)') "frame|x|y|z|u|v|w"
-     !units(n) = temp_id
-     ! ****    ****
 
      ! **** create blender file ****
      write(filename_blender, '(A,I8.8,A)') trim(bc%output_directory) &
@@ -96,14 +83,14 @@ Program main
      write(temp_id,'(A)') "frame|x|y|z|u|v|w|radius"
      units_blender(n) = temp_id
 
-     if( n > 1 ) call getpartparm(partarray(n),bc) 
+     if( n > 1 .and. bc%file_type == "RandomCenter" ) call getpartparm(partarray(n),bc) 
 
    end do
 
 
-   startX = partarray(2)%x
-   startY = partarray(2)%y
-   startZ = partarray(2)%z
+   !startX = partarray(2)%x
+   !startY = partarray(2)%y
+   !startZ = partarray(2)%z
 
    ! set the blender file numbers
    n_blender = 1

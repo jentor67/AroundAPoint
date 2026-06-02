@@ -16,27 +16,19 @@ module gravitymodule
   real(dp) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
   real(dp) :: min_radius =1.0E30
 
-  type particle
-    real(dp) :: x
-    real(dp) :: y
-    real(dp) :: z
-    real(dp) :: u
-    real(dp) :: v
-    real(dp) :: w
-    real(dp) :: fx
-    real(dp) :: fy
-    real(dp) :: fz
-    !real(dp) :: omega
-    !real(dp) :: e
-    !real(dp) :: i
-    !real(dp) :: omegaBIG
-    real(dp) :: radius
-    real(dp) :: mass
-    !real(dp) :: a
-    !real(dp) :: b
-    !real(dp) :: nue
-    !real(dp) :: mue
-  end type particle
+  !type particle
+  !  real(dp) :: x
+  !  real(dp) :: y
+  !  real(dp) :: z
+  !  real(dp) :: u
+  !  real(dp) :: v
+  !  real(dp) :: w
+  !  real(dp) :: fx
+  !  real(dp) :: fy
+  !  real(dp) :: fz
+  !  real(dp) :: radius
+  !  real(dp) :: mass
+  !end type particle
 
 
 contains
