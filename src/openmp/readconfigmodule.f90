@@ -62,7 +62,7 @@ contains
     integer :: unit, ios, particle_count
     character(len=256) ::filepath
     character(len=256) ::attribute
-    real(dp) :: a, b, c, d, e, f, g
+    character(len=256) ::line
     character(len=256) :: attribute_value
     !type(particle) sel
     !real, allocatable, intent(out) :: arr(:)
@@ -80,10 +80,17 @@ contains
     particle_count = 1
 
     do
-      read(unit, *, iostat=ios) attribute, attribute_value
-      if (ios /= 0) exit
+      !read(unit, *, iostat=ios) attribute, attribute_value, a1, a2, a3, a4, a5, a6
+      !if (ios /= 0) exit
 
-      select case (attribute)
+      read(unit, '(A)', iostat=ios) line
+      if (ios /= 0) exit
+      line = adjustl(line)
+
+      ! Extract keyword (first whitespace-delimited token)
+      call split_keyword(line, attribute, attribute_value)
+
+      select case (trim(attribute))
         case ("a")
           read(attribute_value,*) bc%a
           
@@ -122,16 +129,24 @@ contains
         
         case ("LIST")
           ! read list of objects
-          write(*,*) "LIST", particle_count
-          read(unit, *, iostat=ios) attribute, attribute_value
-          write(*,*) "Attribue Valeu", attribute_value
-          read(attribute_value, *)  a,b,c,d,e,f,g
-          write(*,*) "VALUES",a,b,c,d,e,f,g
-          read(attribute_value, *) sel(particle_count)%x,&
-            sel(particle_count)%y, sel(particle_count)%z,&
-            sel(particle_count)%u, sel(particle_count)%v,&
-            sel(particle_count)%w, sel(particle_count)%mass
+          if (index(attribute_value, ',') > 0) then
+            ! Data row: comma-separated values
+            call replace_char(attribute_value, ',', ' ')
+            read(attribute_value, *) sel(particle_count)%x, &
+            sel(particle_count)%y, sel(particle_count)%z, &
+            sel(particle_count)%u, sel(particle_count)%v, &
+            sel(particle_count)%w, sel(particle_count)%x
 
+
+            !list_data(list_count, :) = [v1,v2,v3,v4,v5,v6,v7]
+          end if
+          ! else: "Type LIST" header already handled above
+
+
+          write(*,*) "Value", sel(particle_count)%x, &
+            sel(particle_count)%y, sel(particle_count)%z, &
+            sel(particle_count)%u, sel(particle_count)%v, &
+            sel(particle_count)%w, sel(particle_count)%x
           particle_count = particle_count + 1
         
         case ("nue")
@@ -193,5 +208,32 @@ contains
     !      bc%ObjectMass_max, bc%ObjectCount
   
   end subroutine read_config_file
+
+
+    ! Split a line into its first token (keyword) and the rest (remainder)
+  subroutine split_keyword(line, keyword, remainder)
+    character(len=*), intent(in)  :: line
+    character(len=*), intent(out) :: keyword, remainder
+    integer :: pos
+
+    pos = index(trim(line), ' ')
+    if (pos == 0) then
+      keyword   = trim(line)
+      remainder = ''
+    else
+      keyword   = line(1:pos-1)
+      remainder = adjustl(line(pos+1:))
+    end if
+  end subroutine
+
+  ! Replace every occurrence of old character with new character
+  subroutine replace_char(str, old, new)
+    character(len=*), intent(inout) :: str
+    character(1),     intent(in)    :: old, new
+    integer :: i
+    do i = 1, len(str)
+      if (str(i:i) == old) str(i:i) = new
+    end do
+  end subroutine
 
 end module readconfigmodule

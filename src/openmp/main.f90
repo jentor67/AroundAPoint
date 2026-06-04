@@ -47,7 +47,8 @@ Program main
    call read_config_file(config_file_path,partarray)
 
    !allocate(partarray(bc%ObjectCount))
-
+   write(*,*) "test1"
+   
    ! clear working data
    call execute_command_line("rm -f " // trim(bc%output_directory) &
            // "*.dat")
