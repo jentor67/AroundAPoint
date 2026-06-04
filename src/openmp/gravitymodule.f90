@@ -71,7 +71,7 @@ contains
             p1 = [sel(n_test)%x, sel(n_test)%y, sel(n_test)%z]
             p2 = [sel(n_primary)%x, sel(n_primary)%y, sel(n_primary)%z]
             vel1 = [sel(n_test)%u, sel(n_test)%v, sel(n_test)%w]
-            vel2 = [sel(n_primary)%w, sel(n_primary)%v, sel(n_primary)%w]
+            vel2 = [sel(n_primary)%u, sel(n_primary)%v, sel(n_primary)%w]
 
             call sphere_collision_3d(p1, p2, vel1, vel2, sel(n_test)%mass, sel(n_primary)%mass)
             ! determine the largest object
@@ -174,7 +174,7 @@ contains
 
     b = a*((1-(e**2))**.5)
 
-    call radiusVelocity(rp, ra, T, sel, a, e, mue)
+    call radiusVelocity(rp, ra, T, sel, e, a, mue)
 
     !write(*,*) "After radiusVelocity: ", rp, ra, mue, T
 
@@ -213,8 +213,8 @@ contains
     sel%z = 0
 
     ! ***determine the velocity at the true anomaly sel%nue****
-    vmag = ( mue*( (2/r) - (1/a) ) )**.5 ! velocity magnitude
     mue = gcu*centerMass  !mue based on the centerMass or sun
+    vmag = ( mue*( (2/r) - (1/a) ) )**.5 ! velocity magnitude
 
     ! constant
     con1 = (  mue/( a*(1-(e**2)) ) )**.5
@@ -427,7 +427,7 @@ contains
     ra = (1+e)*a ! distance at apogee (m)
 
     ! standard gravitational parameters
-    mue = real(gcu*(centerMass+sel%mass),kind=4) 
+    mue = real(gcu*(centerMass+sel%mass),kind=dp) 
 
     T = 2 * pie * (( (a**3) /mue )**.5) ! Peroid
 

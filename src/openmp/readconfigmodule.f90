@@ -135,7 +135,7 @@ contains
             read(attribute_value, *) sel(particle_count)%x, &
             sel(particle_count)%y, sel(particle_count)%z, &
             sel(particle_count)%u, sel(particle_count)%v, &
-            sel(particle_count)%w, sel(particle_count)%x
+            sel(particle_count)%w, sel(particle_count)%mass
 
 
             !list_data(list_count, :) = [v1,v2,v3,v4,v5,v6,v7]
@@ -146,7 +146,7 @@ contains
           write(*,*) "Value", sel(particle_count)%x, &
             sel(particle_count)%y, sel(particle_count)%z, &
             sel(particle_count)%u, sel(particle_count)%v, &
-            sel(particle_count)%w, sel(particle_count)%x
+            sel(particle_count)%w, sel(particle_count)%mass
           particle_count = particle_count + 1
         
         case ("nue")
@@ -190,8 +190,11 @@ contains
           read(attribute_value,*) bc%omegabig_max
         
         case("outputDirectory")
-          bc%output_directory = attribute_value
-
+          bc%output_directory = trim(adjustl(attribute_value))
+          ! Remove surrounding double quotes if present
+          if (bc%output_directory(1:1) == '"') then
+              bc%output_directory = bc%output_directory(2:len_trim(bc%output_directory)-1)
+          end if
         case("Type")
           bc%file_type = attribute_value
 

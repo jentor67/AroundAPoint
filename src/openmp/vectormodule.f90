@@ -57,7 +57,7 @@ contains
     real(dp) :: relv(3)
     real(dp) :: dist
     real(dp) :: dotprod
-    real(dp) :: vn(3)
+    real(dp) :: vn
     real(dp) :: j(3)
 
     !---------------------------------------

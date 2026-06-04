@@ -68,11 +68,11 @@ Program main
 
    ! get initial positions of particles
    do n = 1, particles
-
+     write(*,*) 'DEBUG dir: [', trim(bc%output_directory), ']'
      ! **** create blender file ****
      write(filename_blender, '(A,I8.8,A)') trim(bc%output_directory) &
              // 'file_blender_', n, '.dat'
-
+     write(*,*) "Blenderfile:", filename_blender
      open(newunit=temp_id, file=filename_blender, status='replace', &
              action='write', iostat=stat)
 
