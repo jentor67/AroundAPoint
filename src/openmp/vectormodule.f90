@@ -1,4 +1,4 @@
-!> \\file vectorModule.f95
+!> \\file vectorModule.f90
 module vectormodule
   use constantsmodule
   implicit none
@@ -60,25 +60,6 @@ contains
     real(dp) :: vn
     real(dp) :: j(3)
 
-    !---------------------------------------
-    ! Example data
-    !---------------------------------------
-
-    !m1 = 1.0
-    !m2 = 100.0
-
-    ! Sphere centers at impact
-    !x1 = [1.0, 0.0, 0.0]
-    !x2 = [0.0, 0.0, 0.0]
-
-    ! Initial velocities
-    !u1 = [-1.0, 0.0, 0.0]
-    !u2 = [1.0, 0.0, 0.0]
-
-    !---------------------------------------
-    ! Compute collision normal
-    !---------------------------------------
-
     n = x1 - x2
 
     dist = sqrt(sum(n**2))
@@ -132,6 +113,8 @@ contains
     print *, 'Final velocity sphere 2:'
     print '(3F10.4)', v2
 
+    u1 = v1
+    u2 = v2
   end subroutine sphere_collision_3d
 
 end module vectormodule

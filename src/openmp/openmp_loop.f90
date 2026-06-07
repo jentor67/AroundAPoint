@@ -1,4 +1,4 @@
-!> \\file gravityModule.f95
+!> \\file open_loop.f90
 module openmp_loop
   use startparametersmodule
   use vectormodule
@@ -16,32 +16,53 @@ contains
     real(dp) :: fxsum, fysum, fzsum
     type(particle) :: sel(:) 
 
+    ! suggestion from Claude AI
+    real(dp), allocatable :: fx(:), fy(:), fz(:)   ! separate force arrays
+    allocate(fx(size(sel)), fy(size(sel)), fz(size(sel)))
+    ! #####################################
+    
     ! Parallel region with work-sharing DO loop
     !$omp parallel do private(i, fxsum, fysum, fzsum) shared(sel)
     do i = 1, size(sel)
-      fxsum = 0.0_dp
-      fysum = 0.0_dp
-      fzsum = 0.0_dp
+      ! comment out from Claude AI
+      !fxsum = 0.0_dp
+      !fysum = 0.0_dp
+      !fzsum = 0.0_dp
+      ! ########################
       call forcevectorloop(sel, i, size(sel), fxsum, fysum, fzsum)
-      sel(i)%fx = fxsum
-      sel(i)%fy = fysum
-      sel(i)%fz = fzsum
+      ! Claude comment  sel(i)%fx = fxsum
+      ! Claude comment sel(i)%fy = fysum
+      ! Claude comment sel(i)%fz = fzsum
+      ! add Claude AI
+      fx(i) = fxsum
+      fy(i) = fysum
+      fz(i) = fzsum
+
     end do
     !$omp end parallel do
 
-
+    ! Write back after all threads are done
+    do i = 1, size(sel)
+      sel(i)%fx = fx(i)
+      sel(i)%fy = fy(i)
+      sel(i)%fz = fz(i)
+    end do
+  
+    deallocate(fx, fy, fz)
   end subroutine force_loop
 
 
   subroutine velocity_loop(sel)
     integer :: i
+
     real(dp) :: masstime
-    !velocitychange(partarray(m))
+
     type(particle) :: sel(:) 
 
     !$omp parallel do private(i, masstime) shared(sel)
     do i = 1, size(sel)
-      masstime = timedisp/sel(i)%mass
+      masstime = 0
+      if( sel(i)%mass > 0 ) masstime = bc%time_disp/sel(i)%mass
 
       sel(i)%u = sel(i)%u + sel(i)%fx*masstime
       sel(i)%v = sel(i)%v + sel(i)%fy*masstime
@@ -54,14 +75,14 @@ contains
 
   subroutine position_loop(sel)
     integer :: i
-    !positionchange(partarray(m))
+
     type(particle) :: sel(:) 
     
     !$omp parallel do private(i) shared(sel)
     do i = 1, size(sel)
-      sel(i)%x = sel(i)%x+sel(i)%u*timedisp
-      sel(i)%y = sel(i)%y+sel(i)%v*timedisp
-      sel(i)%z = sel(i)%z+sel(i)%w*timedisp
+      sel(i)%x = sel(i)%x+sel(i)%u*bc%time_disp
+      sel(i)%y = sel(i)%y+sel(i)%v*bc%time_disp
+      sel(i)%z = sel(i)%z+sel(i)%w*bc%time_disp
     end do
     !$omp end parallel do
 

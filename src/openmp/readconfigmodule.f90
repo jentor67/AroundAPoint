@@ -1,4 +1,4 @@
-!> \\file readconfigmodule.f95
+!> \\file readconfigmodule.f90
 module readconfigmodule
   use constantsmodule
   implicit none
@@ -47,10 +47,12 @@ module readconfigmodule
     real(dp) :: omegabig
     real(dp) :: omegabig_min
     real(dp) :: omegabig_max
-   
+    real(dp) :: time_disp
+
     integer :: blender_limit 
     integer :: Iterations
     integer :: ObjectCount
+
   end type boundaryconditions
   
  
@@ -80,8 +82,6 @@ contains
     particle_count = 1
 
     do
-      !read(unit, *, iostat=ios) attribute, attribute_value, a1, a2, a3, a4, a5, a6
-      !if (ios /= 0) exit
 
       read(unit, '(A)', iostat=ios) line
       if (ios /= 0) exit
@@ -128,19 +128,22 @@ contains
           read(attribute_value,*) bc%Iterations
         
         case ("LIST")
+          if (.not. allocated(sel)) then
+            print *, "Error: ObjectCount must appear before LIST in config file"
+            stop
+          end if
           ! read list of objects
           if (index(attribute_value, ',') > 0) then
             ! Data row: comma-separated values
             call replace_char(attribute_value, ',', ' ')
+
             read(attribute_value, *) sel(particle_count)%x, &
             sel(particle_count)%y, sel(particle_count)%z, &
             sel(particle_count)%u, sel(particle_count)%v, &
             sel(particle_count)%w, sel(particle_count)%mass
 
 
-            !list_data(list_count, :) = [v1,v2,v3,v4,v5,v6,v7]
           end if
-          ! else: "Type LIST" header already handled above
 
 
           write(*,*) "Value", sel(particle_count)%x, &
@@ -195,6 +198,10 @@ contains
           if (bc%output_directory(1:1) == '"') then
               bc%output_directory = bc%output_directory(2:len_trim(bc%output_directory)-1)
           end if
+
+        case("TimeDisp")
+          read(attribute_value,*) bc%time_disp
+
         case("Type")
           bc%file_type = attribute_value
 
@@ -207,8 +214,6 @@ contains
 
     close(unit)
     
-    !write(*,*) bc%CenterMass, bc%Iterations, bc%ObjectMass_min, &
-    !      bc%ObjectMass_max, bc%ObjectCount
   
   end subroutine read_config_file
 

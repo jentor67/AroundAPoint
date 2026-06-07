@@ -1,4 +1,4 @@
-!> \\file startParameters.f95
+!> \\file startParameters.f90
 module startparametersmodule
   use constantsmodule
   implicit none

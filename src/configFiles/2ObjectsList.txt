@@ -3,5 +3,6 @@ Iterations 31557600
 BlenderLimit 2000
 outputDirectory "/mnt/kdrive/"
 ObjectCount 2
+TimeDisp 1
 LIST 0,0,0,0,0,0,1.0
 LIST 1.0,0,0,0,0,0,1.0

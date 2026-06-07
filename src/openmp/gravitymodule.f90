@@ -1,4 +1,4 @@
-!> \\file gravityModule.f95
+!> \\file gravityModule.f90
 module gravitymodule
   use startparametersmodule
   use vectormodule
@@ -8,32 +8,17 @@ module gravitymodule
 
   public :: acceleration, distance
   public :: valueLargeBody, forcevector, forcevectorloop
-  public :: velocitychange, getpartparm, printparticle, printparticles
+  public :: velocitychange, getpartparm, printparticles
   public :: collisionTest
 
   real(dp) :: mass 
-  real(dp) :: timedisp = 1 !.000001
   real(dp) :: centerMass !mass1 = 1000.0 ! = 1.989E30!; // kg
-  real(dp) :: min_radius =1.0E30
-
-  !type particle
-  !  real(dp) :: x
-  !  real(dp) :: y
-  !  real(dp) :: z
-  !  real(dp) :: u
-  !  real(dp) :: v
-  !  real(dp) :: w
-  !  real(dp) :: fx
-  !  real(dp) :: fy
-  !  real(dp) :: fz
-  !  real(dp) :: radius
-  !  real(dp) :: mass
-  !end type particle
 
 
 contains
 
   subroutine collisionTest(sel, n_particals, iteration)
+    ! only works for 2 body collisions
     integer :: n_primary, n_test, n_particals, iteration
 
     real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3)
@@ -41,10 +26,9 @@ contains
     type(particle) sel(n_particals)
 
 
-
     do n_primary = 1, n_particals
 
-      do n_test = 1, n_particals
+      do n_test = n_primary, n_particals
 
         if( n_particals == 2  .and. n_test ==2 .and. n_primary == 1) then
            dist_two_objects = distance( sel(n_primary), sel(n_test) )
@@ -74,25 +58,6 @@ contains
             vel2 = [sel(n_primary)%u, sel(n_primary)%v, sel(n_primary)%w]
 
             call sphere_collision_3d(p1, p2, vel1, vel2, sel(n_test)%mass, sel(n_primary)%mass)
-            ! determine the largest object
-            !if( sel(n_primary)%mass >= sel(n_test)%mass ) then
-            !  sel(n_primary)%mass = sel(n_primary)%mass + &
-            !          sel(n_test)%mass
-            !  sel(n_primary)%radius = ( (sel(n_primary)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
-            !  sel(n_test)%mass = -1
-            !  sel(n_test)%x = -10000
-            !  sel(n_test)%y = -10000
-            !  sel(n_test)%z = -10000
-            !else
-            !  sel(n_test)%mass = sel(n_primary)%mass + &
-            !          sel(n_test)%mass
-            !  sel(n_test)%radius = ( (sel(n_test)%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
-            !  sel(n_primary)%mass = -1
-            !  sel(n_primary)%x = -10000
-            !  sel(n_primary)%y = -10000
-            !  sel(n_primary)%z = -10000
-            !end if
-
 
           end if       
 
@@ -136,8 +101,8 @@ contains
     end if
 
     ! test if Logitude of Ascending Node is > -9999.9
-    if( cf%omegaBIG > -9999.9 ) then
-            omegaBIG = cf%omegaBIG
+    if( cf%omegabig > -9999.9 ) then
+            omegaBIG = cf%omegabig
     else
             omegaBIG = randomLongitudeOfAscendingNode( &
                     cf%omegabig_min, cf%omegabig_max)
@@ -150,9 +115,8 @@ contains
             sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
     end if
 
-    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
+    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(1.0_dp/3.0_dp)
     
-    !write(*,*) sel%radius, sel%mass, density_material, pie
 
     ! test if given a sigle SemiMajorAxis
     if( cf%a > -9999.9 ) then
@@ -168,27 +132,22 @@ contains
             nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
     end if
     
-    !write(*,*) "i: ", i, "  omegaBig: ",  omegaBIG, &
-    ! "  omega: ",omega, "  nue: ", nue, "  e: ",e, &
-    ! "  a: ",a, "  mass: ", sel%mass
 
     b = a*((1-(e**2))**.5)
 
     call radiusVelocity(rp, ra, T, sel, e, a, mue)
 
-    !write(*,*) "After radiusVelocity: ", rp, ra, mue, T
 
     call startPointVelocity(sel, a, e, i, mue, nue, omega, omegaBIG)
-    !write(*,*) "u: ",sel%u, " v: ", sel%v, " w: ",sel%w
 
   end subroutine getpartparm
 
   subroutine positionchange(sel)
     type(particle) sel
 
-    sel%x = sel%x+sel%u*timedisp
-    sel%y = sel%y+sel%v*timedisp
-    sel%z = sel%z+sel%w*timedisp
+    sel%x = sel%x+sel%u*bc%time_disp
+    sel%y = sel%y+sel%v*bc%time_disp
+    sel%z = sel%z+sel%w*bc%time_disp
 
   end subroutine positionchange
 
@@ -274,7 +233,7 @@ contains
 
     ! f=ma --> a=f/m
     !dv = a*dt --> f/m*dt
-    masstime = timedisp/sel%mass
+    masstime = bc%time_disp/sel%mass
 
     sel%u = sel%u + sel%fx*masstime
     sel%v = sel%v + sel%fy*masstime
@@ -293,7 +252,7 @@ contains
     sel%v=0
     sel%w=0
     sel%mass=cf%CenterMass
-    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(0.3333)
+    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(1.0_dp/3.0_dp)
   end subroutine valueLargeBody
 
 
@@ -391,30 +350,9 @@ contains
 
     end do
 
-    !10   format (e17.10,",",e17.10,",",e17.10,",")
-    !30   format (e17.10,e17.10,e17.10)
-    !40   format (e17.10," ",e17.10," ",e17.10)
-    !50   format (e17.10," ",e17.10," ",e17.10," ",e17.10," ",e17.10, &
-    !        " ",e17.10)
     60   format (i0, "|", e17.10, "|", e17.10, "|", e17.10, "|", &
             e17.10, "|", e17.10, "|", e17.10, "|", e17.10)
-    !20   format (e17.10,",",e17.10,",",e17.10)
   end subroutine printparticles
-
-  subroutine printparticle(i, sel)
-    integer :: i
-    type(particle) sel
-    real(dp) :: r, v
-   
-    r =  magnitude(sel%x, sel%y, sel%z) 
-    v = magnitude(sel%u, sel%v, sel%w)
-
-    !write(*,*) "P ", i, " ", sel%x, sel%y, sel%z, r, &
-    !        sel%u, sel%v, sel%w, v, & 
-    !        "mass: ", sel%mass, " radius: ",sel%radius
-    !!        sel%mass
-
-  end subroutine printparticle
 
 
   subroutine radiusVelocity(rp, ra, T, sel, e, a, mue)

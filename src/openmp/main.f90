@@ -1,7 +1,6 @@
-!> \\file main.f95
+!> \\file main.f90
 Program main
    use readconfigmodule
-   !use blenderconfigmodule
    use startparametersmodule
    use constantsmodule
    use gravitymodule
@@ -9,7 +8,6 @@ Program main
    use omp_lib
    implicit none
 
-   !character(len=100) :: filename
    character(len=100) :: filename_blender
    character(len=256) :: config_file_path
 
@@ -20,16 +18,12 @@ Program main
 
    logical :: blender
 
-   !real(dp) :: c, perCur
-   !real(dp) :: r
-   !real(dp) :: startX, startY, startZ
-
    real(dp) :: start_time, end_time
+
    type(particle), allocatable :: partarray(:)
 
    !************************************************* 
 
-   !call cpu_time(start_time)
    start_time = omp_get_wtime()
 
    ! Get config file
@@ -46,8 +40,6 @@ Program main
 
    call read_config_file(config_file_path,partarray)
 
-   !allocate(partarray(bc%ObjectCount))
-   write(*,*) "test1"
    
    ! clear working data
    call execute_command_line("rm -f " // trim(bc%output_directory) &
@@ -89,10 +81,6 @@ Program main
    end do
 
 
-   !startX = partarray(2)%x
-   !startY = partarray(2)%y
-   !startZ = partarray(2)%z
-
    ! set the blender file numbers
    n_blender = 1
    n_blender_limit = bc%blender_limit
@@ -103,10 +91,9 @@ Program main
 
    do n = 1, bc%Iterations
      blender= .false.
-     !call printparticles(n, partarray, units, particles,blender)
 
      ! test if writing to blender
-     if( modulo(n,n_blender_div) == 0 ) then
+     if( modulo(n, n_blender_div) == 0 ) then
        blender= .true. ! set blender to true
        call printparticles(n_blender, partarray, units_blender, &
                particles,blender)
@@ -136,7 +123,6 @@ Program main
    end do
 
 
-   !call cpu_time(end_time)
    end_time = omp_get_wtime()
    print *, "Elapsed CPU time:", end_time - start_time, "seconds"
 
