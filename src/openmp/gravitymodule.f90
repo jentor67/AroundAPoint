@@ -17,28 +17,27 @@ module gravitymodule
 
 contains
 
-  subroutine collisionTest(sel, n_particals, iteration)
+  subroutine collisionTest(sel, iteration)
     ! only works for 2 body collisions
-    integer :: n_primary, n_test, n_particals, iteration
+    integer :: n_primary, n_test, iteration
 
-    real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3)
+    real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3), m1, m2
     
-    type(particle) sel(n_particals)
+    type(particle) sel(:)
 
 
-    do n_primary = 1, n_particals
+    do n_primary = 1, size(sel)
 
-      do n_test = n_primary, n_particals
+      do n_test = n_primary+1, size(sel)
 
-        if( n_particals == 2  .and. n_test ==2 .and. n_primary == 1) then
+        if( size(sel) == 2  .and. n_test ==2 .and. n_primary == 1) then
            dist_two_objects = distance( sel(n_primary), sel(n_test) )
 
            if( dist_two_objects < min_radius ) then
-
              write(*,*) "min_dist", iteration, dist_two_objects
              min_radius = dist_two_objects
-
            end if
+
         end if
 
         if( n_primary /= n_test .and. &
@@ -56,9 +55,20 @@ contains
             p2 = [sel(n_primary)%x, sel(n_primary)%y, sel(n_primary)%z]
             vel1 = [sel(n_test)%u, sel(n_test)%v, sel(n_test)%w]
             vel2 = [sel(n_primary)%u, sel(n_primary)%v, sel(n_primary)%w]
-
-            call sphere_collision_3d(p1, p2, vel1, vel2, sel(n_test)%mass, sel(n_primary)%mass)
-
+            m1 = sel(n_test)%mass 
+            m2 = sel(n_primary)%mass
+            
+            call sphere_collision_3d(p1, p2, vel1, vel2, m1, m2)
+            
+            sel(n_test)%x = vel1(1)
+            sel(n_test)%y = vel1(2)
+            sel(n_test)%z = vel1(3)
+            
+            sel(n_primary)%x = vel2(1)
+            sel(n_primary)%y = vel2(2)
+            sel(n_primary)%z = vel2(3)
+           
+              
           end if       
 
         end if

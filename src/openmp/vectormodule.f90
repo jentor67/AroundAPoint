@@ -48,6 +48,7 @@ contains
 
 
   subroutine  sphere_collision_3d(x1, x2, u1, u2, m1, m2) 
+  !subroutine  sphere_collision_3d(sel, t, p)
 
     real(dp) :: m1, m2
     real(dp) :: x1(3), x2(3)
@@ -59,6 +60,7 @@ contains
     real(dp) :: dotprod
     real(dp) :: vn
     real(dp) :: j(3)
+
 
     n = x1 - x2
 
@@ -115,6 +117,8 @@ contains
 
     u1 = v1
     u2 = v2
+
+    
   end subroutine sphere_collision_3d
 
 end module vectormodule

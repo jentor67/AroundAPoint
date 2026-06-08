@@ -1,7 +1,7 @@
 Type LIST
-Iterations 31557600
-BlenderLimit 2000
+Iterations 31000000
 outputDirectory "/mnt/kdrive/"
+BlenderLimit 2000
 ObjectCount 2
 TimeDisp 1
 LIST 0,0,0,0,0,0,1.0

@@ -1,9 +1,13 @@
 !> \\file readconfigmodule.f90
 module readconfigmodule
   use constantsmodule
+  use ieee_arithmetic
+
   implicit none
   
   public :: read_config_file
+
+  integer, parameter :: UNSET = -huge(0) - 1 
 
   type particle
     real(dp) :: x
@@ -49,25 +53,28 @@ module readconfigmodule
     real(dp) :: omegabig_max
     real(dp) :: time_disp
 
-    integer :: blender_limit 
-    integer :: Iterations
-    integer :: ObjectCount
+    integer :: blender_limit = UNSET
+    integer :: Iterations = UNSET
+    integer :: ObjectCount = UNSET
 
   end type boundaryconditions
   
  
   type(boundaryconditions) :: bc
+
+
 contains
 
   subroutine  read_config_file(filepath, sel)
     implicit none
+
     integer :: unit, ios, particle_count
+
     character(len=256) ::filepath
     character(len=256) ::attribute
     character(len=256) ::line
     character(len=256) :: attribute_value
-    !type(particle) sel
-    !real, allocatable, intent(out) :: arr(:)
+
     type(particle), allocatable, intent(out) :: sel(:)
 
     open(newunit=unit, file=filepath, status="old", action="read")
@@ -206,14 +213,31 @@ contains
           bc%file_type = attribute_value
 
         case default
-          print *, "Unknown command --> ", attribute, attribute_value
+          print *, "Unknown Attribute --> ", attribute, attribute_value
 
       end select
+
+
 
     end do
 
     close(unit)
     
+
+    if (bc%blender_limit == UNSET) then
+      print *, "Error: bc%blender_limit has not been assigned"
+      stop
+    end if
+  
+    if (bc%Iterations == UNSET) then
+      print *, "Error: bc%Iterations has not been assigned"
+      stop
+    end if
+  
+    if (bc%ObjectCount == UNSET) then
+      print *, "Error: bc%ObjectCount has not been assigned"
+      stop
+    end if
   
   end subroutine read_config_file
 

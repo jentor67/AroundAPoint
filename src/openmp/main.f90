@@ -110,12 +110,11 @@ Program main
      call position_loop(partarray)
 
      !  test if there are any collisions
-     call collisionTest(partarray,particles, n)
+     call collisionTest( partarray, bc%Iterations )
      
    end do
 
    write(*,*) "End of Iterations"
-
 
    !  close blender files
    do n = 1, particles
