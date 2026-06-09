@@ -16,8 +16,6 @@ Program main
    integer :: n, particles, stat, temp_id
    integer :: n_blender, n_blender_div, n_blender_limit
 
-   logical :: blender
-
    real(dp) :: start_time, end_time
 
    type(particle), allocatable :: partarray(:)
@@ -90,15 +88,11 @@ Program main
    write(*,*) "Start of Iterations"
 
    do n = 1, bc%Iterations
-     blender= .false.
-
      ! test if writing to blender
      if( modulo(n, n_blender_div) == 0 ) then
-       blender= .true. ! set blender to true
        call printparticles(n_blender, partarray, units_blender, &
-               particles,blender)
+               particles)
        n_blender = n_blender + 1
-       blender= .false. ! set blender to false
      end if
     
      ! *** call force loop **

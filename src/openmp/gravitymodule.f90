@@ -84,42 +84,43 @@ contains
     type(particle) sel
 
     real(dp) :: ra, rp
-    real(dp) :: a, b, e, i, nue, mue, omega, omegaBIG
+    real(dp) :: a, b, e, i, nue, omega, omegaBIG
     real(dp) :: T
+    real(dp) :: mue = 0.0_dp
 
 
-    ! test if Argument of Periapsis is greater than -9999.9
-    if( cf%omega > -9999.9 ) then
+    ! test if Argument of Periapsis exists
+    if( ieee_is_finite(cf%omega) ) then
             omega = cf%omega
     else
             omega = randomArgumentOfPeriapsis(cf%omega_min, &
                     cf%omega_max)
     end if
 
-    ! test if Eccentricity > -9999.9
-    if( cf%e > -9999.9 ) then
+    ! test if Eccentricity exists
+    if( ieee_is_finite(cf%e) ) then
             e = cf%e
     else
             e = randomEccentricity(cf%e_min, cf%e_max)
     end if
 
-    ! test if Inclination > -9999.9
-    if( cf%i > -9999.9 ) then
+    ! test if Inclination exists
+    if( ieee_is_finite(cf%i) ) then
             i = cf%i
     else
             i =  randomInclination(cf%i_min, cf%i_max)
     end if
 
-    ! test if Logitude of Ascending Node is > -9999.9
-    if( cf%omegabig > -9999.9 ) then
+    ! test if omegabig exists
+    if( ieee_is_finite(cf%omegabig) ) then
             omegaBIG = cf%omegabig
     else
             omegaBIG = randomLongitudeOfAscendingNode( &
                     cf%omegabig_min, cf%omegabig_max)
     end if
 
-    ! test if given a single mass
-    if(cf%ObjectMass > -9999.9 ) then
+    ! test if Object Mass exists
+    if( ieee_is_finite(cf%ObjectMass) ) then
             sel%mass = cf%ObjectMass
     else
             sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
@@ -128,15 +129,15 @@ contains
     sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(1.0_dp/3.0_dp)
     
 
-    ! test if given a sigle SemiMajorAxis
-    if( cf%a > -9999.9 ) then
+    ! test if a exists
+    if( ieee_is_finite(cf%a) ) then
             a = cf%a
     else
             a = randomSemiMajorAxis(cf%a_min, cf%a_max)
     end if
 
-    ! test if given a single True Anomaly
-    if( cf%nue > -9999.9) then
+    ! test if nue exists
+    if( ieee_is_finite(cf%nue) ) then
             nue = cf%nue
     else
             nue = randomTrueAnomaly(cf%nue_min, cf%nue_max)
@@ -283,7 +284,7 @@ contains
 
   subroutine forcevector(a, b, fx, fy, fz) 
     real(dp) :: fx, fy, fz
-    real(dp) dis1,force, constant
+    real(dp) :: dis1, force, constant
     type(particle) :: a, b
 
     dis1 = distance(a,b)
@@ -329,39 +330,20 @@ contains
   end subroutine forcevectorloop
 
 
-  subroutine printparticles(iteration, sel, units, particles, b_blender)
-    logical :: b_blender
-
+  subroutine printparticles(iteration, sel, units, particles)
     integer :: units(:)
     integer :: n, particles, iteration
-    integer :: blender_factor 
 
     type(particle) sel(particles)
-  
-
-    blender_factor = 1 ! default
-   
-    ! test if this is blender file 
-    if( b_blender ) then
-      blender_factor = 1
-      !blender_factor = 1000000000
-    end if
 
     do n = 1, particles
-
-      !if( sel(n)%mass > 0.0 ) then
-
-        write(units(n),60) iteration, &
-          sel(n)%x/blender_factor, sel(n)%y/blender_factor, &
-          sel(n)%z/blender_factor, sel(n)%u, sel(n)%v, sel(n)%w, &
-          sel(n)%radius
-
-      !end if
-
+      write(units(n),60) iteration, sel(n)%x, sel(n)%y, sel(n)%z, &
+              sel(n)%u, sel(n)%v, sel(n)%w, sel(n)%radius
     end do
 
     60   format (i0, "|", e17.10, "|", e17.10, "|", e17.10, "|", &
             e17.10, "|", e17.10, "|", e17.10, "|", e17.10)
+
   end subroutine printparticles
 
 

@@ -79,13 +79,13 @@ contains
 
     open(newunit=unit, file=filepath, status="old", action="read")
 
-    bc%a = -10000.0
-    bc%ObjectMass = -10000.0
-    bc%e = -10000.0
-    bc%i = -10000.0
-    bc%nue = -10000.0
-    bc%omega = -10000.0
-    bc%omegabig = -10000.0
+    bc%a = ieee_value(bc%a, ieee_quiet_nan)
+    bc%ObjectMass = ieee_value(bc%ObjectMass, ieee_quiet_nan)
+    bc%e = ieee_value(bc%e, ieee_quiet_nan)
+    bc%i = ieee_value(bc%i, ieee_quiet_nan)
+    bc%nue = ieee_value(bc%nue, ieee_quiet_nan)
+    bc%omega = ieee_value(bc%omega, ieee_quiet_nan)
+    bc%omegabig = ieee_value(bc%omegabig, ieee_quiet_nan)
     particle_count = 1
 
     do
@@ -139,6 +139,7 @@ contains
             print *, "Error: ObjectCount must appear before LIST in config file"
             stop
           end if
+
           ! read list of objects
           if (index(attribute_value, ',') > 0) then
             ! Data row: comma-separated values
@@ -149,7 +150,11 @@ contains
             sel(particle_count)%u, sel(particle_count)%v, &
             sel(particle_count)%w, sel(particle_count)%mass
 
-
+            sel(particle_count)%fx = 0.0_dp
+            sel(particle_count)%fy = 0.0_dp
+            sel(particle_count)%fz = 0.0_dp
+            sel(particle_count)%radius = (sel(particle_count)%mass / &
+                    density_material * 0.75_dp / pie)**(1.0_dp/3.0_dp)
           end if
 
 

@@ -24,16 +24,8 @@ contains
     ! Parallel region with work-sharing DO loop
     !$omp parallel do private(i, fxsum, fysum, fzsum) shared(sel)
     do i = 1, size(sel)
-      ! comment out from Claude AI
-      !fxsum = 0.0_dp
-      !fysum = 0.0_dp
-      !fzsum = 0.0_dp
-      ! ########################
       call forcevectorloop(sel, i, size(sel), fxsum, fysum, fzsum)
-      ! Claude comment  sel(i)%fx = fxsum
-      ! Claude comment sel(i)%fy = fysum
-      ! Claude comment sel(i)%fz = fzsum
-      ! add Claude AI
+
       fx(i) = fxsum
       fy(i) = fysum
       fz(i) = fzsum

@@ -1,7 +1,6 @@
 # >my_program <configfile>
 FC = gfortran
 FFLAGS = -std=f2008 -Wall -O3 -fopenmp
-#FFLAGS = -std=f2008 -O2 -Wall -O3 -fopenmp
 #FFLAGS = -std=f2008 -O2 -Wall
 # recommended
 TARGET = my_program
