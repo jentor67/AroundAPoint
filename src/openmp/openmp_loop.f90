@@ -8,7 +8,7 @@ module openmp_loop
 
   implicit none
 
-  public :: force_loop, velocity_loop, position_loop
+  public :: force_loop, velocity_loop, position_loop, velocity_half_loop
 contains
 
   subroutine force_loop(sel)
@@ -63,6 +63,27 @@ contains
     !$omp end parallel do
 
   end subroutine velocity_loop
+
+
+  subroutine velocity_half_loop(sel)
+    integer :: i
+
+    real(dp) :: masstime
+
+    type(particle) :: sel(:) 
+
+    !$omp parallel do private(i, masstime) shared(sel)
+    do i = 1, size(sel)
+      masstime = 0
+      if( sel(i)%mass > 0 ) masstime = .5*bc%time_disp/sel(i)%mass
+
+      sel(i)%u = sel(i)%u + sel(i)%fx*masstime
+      sel(i)%v = sel(i)%v + sel(i)%fy*masstime
+      sel(i)%w = sel(i)%w + sel(i)%fz*masstime
+    end do
+    !$omp end parallel do
+
+  end subroutine velocity_half_loop
 
 
   subroutine position_loop(sel)

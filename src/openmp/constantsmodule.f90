@@ -11,11 +11,5 @@ module constantsmodule
   real(dp) :: min_radius = 1.0E30_dp
 contains
 
-  !subroutine john()
-  !  integer :: i = 0
-  !
-  !  i = i +1
-  !end subroutine john
-
 
 end module constantsmodule

@@ -94,22 +94,28 @@ Program main
                particles)
        n_blender = n_blender + 1
      end if
-  ! Leapfrog: half-kick velocity, full drift position, recompute forces, half-kick again
-!call velocity_half_loop(partarray)    ! v += 0.5*a*dt
-!call position_loop(partarray)         ! x += v*dt
-!call force_loop(partarray)            ! recompute forces at new x
-!call velocity_half_loop(partarray)    ! v += 0.5*a*dt
+     ! Leapfrog: half-kick velocity, full drift position, 
+     ! recompute forces, half-kick again
+     call velocity_half_loop(partarray)    ! v += 0.5*a*dt
+     call position_loop(partarray)         ! x += v*dt
+     call force_loop(partarray)            ! recompute forces at new x
+     call velocity_half_loop(partarray)    ! v += 0.5*a*dt
+     !  # end of leapfrog!
+     
+    !
+     ! ### OLD version ###
      ! *** call force loop **
-     call force_loop(partarray) 
+     !call force_loop(partarray) 
 
      !  *****update velocity and position
-     call velocity_loop(partarray)
+     !call velocity_loop(partarray)
 
-     call position_loop(partarray)
+     !call position_loop(partarray)
+     !  ############################ 
 
      !  test if there are any collisions
      call collisionTest( partarray, n ) !bc%Iterations )
-     
+
    end do
 
    write(*,*) "End of Iterations"
