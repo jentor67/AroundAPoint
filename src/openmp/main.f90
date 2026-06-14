@@ -1,6 +1,7 @@
 !> \\file main.f90
 Program main
    use readconfigmodule
+   use particle_module
    use startparametersmodule
    use constantsmodule
    use gravitymodule
@@ -94,12 +95,38 @@ Program main
                particles)
        n_blender = n_blender + 1
      end if
+
+     !  ### using the class ###
+     ! --- half-kick (v += 0.5*a*dt) ---
+     do i = 1, n_particles
+       call partarray(i)%half_kick(dt)
+     end do
+     
+     ! --- drift (x += v*dt) ---
+     do i = 1, n_particles
+       call partarray(i)%drift(dt)
+     end do
+     
+     ! --- zero forces, recompute at new positions ---
+     do i = 1, n_particles
+       call partarray(i)%zero_force()
+     end do
+     call forcevectorloop(partarray, n_particles)   ! still a standalone parallel routine
+     call collisionTest(partarray, n_particles)     ! internally calls collide_with
+     
+     ! --- half-kick again ---
+     do i = 1, n_particles
+       call partarray(i)%half_kick(dt)
+     end do
+     !   #########################
+
+
      ! Leapfrog: half-kick velocity, full drift position, 
      ! recompute forces, half-kick again
-     call velocity_half_loop(partarray)    ! v += 0.5*a*dt
-     call position_loop(partarray)         ! x += v*dt
-     call force_loop(partarray)            ! recompute forces at new x
-     call velocity_half_loop(partarray)    ! v += 0.5*a*dt
+     ! call velocity_half_loop(partarray)    ! v += 0.5*a*dt
+     ! call position_loop(partarray)         ! x += v*dt
+     ! call force_loop(partarray)            ! recompute forces at new x
+     ! call velocity_half_loop(partarray)    ! v += 0.5*a*dt
      !  # end of leapfrog!
      
     !
