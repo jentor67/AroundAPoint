@@ -9,7 +9,7 @@ Iterations 1200000
 BlenderLimit 2000
 nue_min 0
 nue_max 360
-ObjectCount 48
+ObjectCount 480
 ObjectMass_min 1
 ObjectMass_max 3
 omega_min 0

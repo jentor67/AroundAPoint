@@ -54,7 +54,7 @@ contains
     !$omp parallel do private(i, masstime) shared(sel)
     do i = 1, size(sel)
       masstime = 0
-      if( sel(i)%mass > 0 ) masstime = bc%time_disp/sel(i)%mass
+      if( sel(i)%mass > 0 ) masstime = bc%dt/sel(i)%mass
 
       sel(i)%u = sel(i)%u + sel(i)%fx*masstime
       sel(i)%v = sel(i)%v + sel(i)%fy*masstime
@@ -75,7 +75,7 @@ contains
     !$omp parallel do private(i, masstime) shared(sel)
     do i = 1, size(sel)
       masstime = 0
-      if( sel(i)%mass > 0 ) masstime = .5*bc%time_disp/sel(i)%mass
+      if( sel(i)%mass > 0 ) masstime = .5*bc%dt/sel(i)%mass
 
       sel(i)%u = sel(i)%u + sel(i)%fx*masstime
       sel(i)%v = sel(i)%v + sel(i)%fy*masstime
@@ -93,9 +93,9 @@ contains
     
     !$omp parallel do private(i) shared(sel)
     do i = 1, size(sel)
-      sel(i)%x = sel(i)%x+sel(i)%u*bc%time_disp
-      sel(i)%y = sel(i)%y+sel(i)%v*bc%time_disp
-      sel(i)%z = sel(i)%z+sel(i)%w*bc%time_disp
+      sel(i)%x = sel(i)%x+sel(i)%u*bc%dt
+      sel(i)%y = sel(i)%y+sel(i)%v*bc%dt
+      sel(i)%z = sel(i)%z+sel(i)%w*bc%dt
     end do
     !$omp end parallel do
 

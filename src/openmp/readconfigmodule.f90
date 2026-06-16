@@ -1,6 +1,7 @@
 !> \\file readconfigmodule.f90
 module readconfigmodule
   use constantsmodule
+  use particle_module
   use ieee_arithmetic
 
   implicit none
@@ -9,19 +10,19 @@ module readconfigmodule
 
   integer, parameter :: UNSET = -huge(0) - 1 
 
-  type particle
-    real(dp) :: x
-    real(dp) :: y
-    real(dp) :: z
-    real(dp) :: u
-    real(dp) :: v
-    real(dp) :: w
-    real(dp) :: fx
-    real(dp) :: fy
-    real(dp) :: fz
-    real(dp) :: radius
-    real(dp) :: mass
-  end type particle
+!  type particle
+!    real(dp) :: x
+!    real(dp) :: y
+!    real(dp) :: z
+!    real(dp) :: u
+!    real(dp) :: v
+!    real(dp) :: w
+!    real(dp) :: fx
+!    real(dp) :: fy
+!    real(dp) :: fz
+!    real(dp) :: radius
+!    real(dp) :: mass
+!  end type particle
 
 
   type boundaryconditions
@@ -51,7 +52,7 @@ module readconfigmodule
     real(dp) :: omegabig
     real(dp) :: omegabig_min
     real(dp) :: omegabig_max
-    real(dp) :: time_disp
+    real(dp) :: dt
 
     integer :: blender_limit = UNSET
     integer :: Iterations = UNSET
@@ -212,7 +213,7 @@ contains
           end if
 
         case("TimeDisp")
-          read(attribute_value,*) bc%time_disp
+          read(attribute_value,*) bc%dt
 
         case("Type")
           bc%file_type = attribute_value

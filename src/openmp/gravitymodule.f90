@@ -156,9 +156,9 @@ contains
   subroutine positionchange(sel)
     type(particle) sel
 
-    sel%x = sel%x+sel%u*bc%time_disp
-    sel%y = sel%y+sel%v*bc%time_disp
-    sel%z = sel%z+sel%w*bc%time_disp
+    sel%x = sel%x+sel%u*bc%dt
+    sel%y = sel%y+sel%v*bc%dt
+    sel%z = sel%z+sel%w*bc%dt
 
   end subroutine positionchange
 
@@ -244,7 +244,7 @@ contains
 
     ! f=ma --> a=f/m
     !dv = a*dt --> f/m*dt
-    masstime = bc%time_disp/sel%mass
+    masstime = bc%dt/sel%mass
 
     sel%u = sel%u + sel%fx*masstime
     sel%v = sel%v + sel%fy*masstime
