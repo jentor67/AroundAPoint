@@ -22,7 +22,7 @@ contains
     ! #####################################
     
     ! Parallel region with work-sharing DO loop
-    !$omp parallel do private(i, fxsum, fysum, fzsum) shared(sel)
+    !$omp parallel do private(i, fxsum, fysum, fzsum) shared(sel, fx, fy, fz)
     do i = 1, size(sel)
       call forcevectorloop(sel, i, size(sel), fxsum, fysum, fzsum)
 

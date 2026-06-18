@@ -83,7 +83,16 @@ Program main
    ! set the blender file numbers
    n_blender = 1
    n_blender_limit = bc%blender_limit
-   n_blender_div = bc%Iterations/n_blender_limit
+   ! ****************************
+
+   ! determine the times to write to file
+   ! n_blender_limit >= bc%Iterations --> 1
+   ! n_blender_limit >
+   if( n_blender_limit >= bc%Iterations ) then
+     n_blender_div = 1
+   else
+     n_blender_div = bc%Iterations/n_blender_limit
+   end if
    ! ****************************
 
    write(*,*) "Start of Iterations"
@@ -98,30 +107,34 @@ Program main
 
      !  ### using the class ###
      ! --- half-kick (v += 0.5*a*dt) ---
-     !$omp parallel do private(i) shared(partarray)
-     do i = 1, particles
-       call partarray(i)%half_kick(bc%dt)
-     end do
-     !$omp end parallel do
-     
-     ! --- drift (x += v*dt) ---
-     !$omp parallel do private(i) shared(partarray)
-     do i = 1, particles
-       call partarray(i)%drift(bc%dt)
-     end do
-     !$omp end parallel do
-     
-     ! --- zero forces, recompute at new positions ---
-     !$omp parallel do private(i) shared(partarray)
-     do i = 1, particles
-       call partarray(i)%zero_force()
-     end do
-     !$omp end parallel do
-
+     !$omp parallel private(i) shared(partarray)
+       
+       !$omp do
+       do i = 1, particles
+         call partarray(i)%half_kick(bc%dt)
+       end do
+       !$omp end do
+       
+       ! --- drift (x += v*dt) ---
+       !$omp do
+       do i = 1, particles
+         call partarray(i)%drift(bc%dt)
+       end do
+       !$omp end do
+       
+       ! --- zero forces, recompute at new positions ---
+       !$omp do
+       do i = 1, particles
+         call partarray(i)%zero_force()
+       end do
+       !$omp end do
+       
+     !$omp end parallel 
+  
      !call forcevectorloop(partarray, particles)   ! still a standalone parallel routine
      call force_loop(partarray)   ! still a standalone parallel routine
      !call collisionTest(partarray, particles)     ! internally calls collide_with
-     
+       
      ! --- half-kick again ---
      !$omp parallel do private(i) shared(partarray)
      do i = 1, particles

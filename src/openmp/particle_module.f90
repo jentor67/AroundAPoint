@@ -40,9 +40,11 @@ contains
     real(dp),        intent(in)    :: dt
     real(dp) :: half_dt
     half_dt  = 0.5_dp * dt
-    self%u = self%u + (self%fx / self%mass) * half_dt
-    self%v = self%v + (self%fy / self%mass) * half_dt
-    self%w = self%w + (self%fz / self%mass) * half_dt
+    if( self%mass > 0 ) then 
+      self%u = self%u + (self%fx / self%mass) * half_dt
+      self%v = self%v + (self%fy / self%mass) * half_dt
+      self%w = self%w + (self%fz / self%mass) * half_dt
+    end if
   end subroutine
 
 

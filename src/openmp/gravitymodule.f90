@@ -16,7 +16,7 @@ module gravitymodule
 
 
 contains
-
+  !  ##### NOT USED ##########
   subroutine collisionTest(sel, iteration)
     ! only works for 2 body collisions
     integer :: n_primary, n_test, iteration
@@ -60,13 +60,13 @@ contains
             
             call sphere_collision_3d(p1, p2, vel1, vel2, m1, m2)
             
-            sel(n_test)%x = vel1(1)
-            sel(n_test)%y = vel1(2)
-            sel(n_test)%z = vel1(3)
+            sel(n_test)%u = vel1(1)
+            sel(n_test)%v = vel1(2)
+            sel(n_test)%w = vel1(3)
             
-            sel(n_primary)%x = vel2(1)
-            sel(n_primary)%y = vel2(2)
-            sel(n_primary)%z = vel2(3)
+            sel(n_primary)%u = vel2(1)
+            sel(n_primary)%v = vel2(2)
+            sel(n_primary)%w = vel2(3)
            
               
           end if       
@@ -78,6 +78,7 @@ contains
     end do
 
   end subroutine collisionTest
+  ! ########################################
 
   subroutine getpartparm(sel, cf)
     type(boundaryconditions) :: cf
@@ -126,7 +127,7 @@ contains
             sel%mass = randomMass(cf%ObjectMass_min, cf%ObjectMass_max) 
     end if
 
-    sel%radius = ( (sel%mass/density_material)*(3.0/4.0)/pie )**(1.0_dp/3.0_dp)
+    sel%radius = ( (sel%mass/density_material)*(3.0_dp/4.0_dp)/pie )**(1.0_dp/3.0_dp)
     
 
     ! test if a exists
@@ -183,7 +184,7 @@ contains
     sel%z = 0
 
     ! ***determine the velocity at the true anomaly sel%nue****
-    mue = gcu*centerMass  !mue based on the centerMass or sun
+    !mue = gcu*centerMass  !mue based on the centerMass or sun
     vmag = ( mue*( (2/r) - (1/a) ) )**.5 ! velocity magnitude
 
     ! constant

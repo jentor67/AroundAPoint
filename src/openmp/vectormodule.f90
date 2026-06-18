@@ -47,6 +47,7 @@ contains
   end subroutine unitVector
 
 
+  ! ######### NOT USED #############
   subroutine  sphere_collision_3d(x1, x2, u1, u2, m1, m2) 
   !subroutine  sphere_collision_3d(sel, t, p)
 
@@ -120,5 +121,5 @@ contains
 
     
   end subroutine sphere_collision_3d
-
+  ! ##################
 end module vectormodule
