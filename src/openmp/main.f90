@@ -50,8 +50,6 @@ Program main
    allocate( units(bc%ObjectCount) )
    allocate( units_blender(bc%ObjectCount) )
 
-
-
    if( bc%file_type == "RandomCenter" ) then
       call valueLargeBody(partarray(1),bc)
       centerMass =  bc%CenterMass

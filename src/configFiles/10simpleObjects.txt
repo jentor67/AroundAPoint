@@ -1,3 +1,4 @@
+Type RandomCenter
 a_min 5
 a_max 10
 CenterMass 500

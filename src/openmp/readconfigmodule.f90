@@ -10,20 +10,6 @@ module readconfigmodule
 
   integer, parameter :: UNSET = -huge(0) - 1 
 
-!  type particle
-!    real(dp) :: x
-!    real(dp) :: y
-!    real(dp) :: z
-!    real(dp) :: u
-!    real(dp) :: v
-!    real(dp) :: w
-!    real(dp) :: fx
-!    real(dp) :: fy
-!    real(dp) :: fz
-!    real(dp) :: radius
-!    real(dp) :: mass
-!  end type particle
-
 
   type boundaryconditions
     character(len=256) ::output_directory

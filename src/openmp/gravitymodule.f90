@@ -149,9 +149,9 @@ contains
 
     call radiusVelocity(rp, ra, T, sel, e, a, mue)
 
-
     call startPointVelocity(sel, a, e, i, mue, nue, omega, omegaBIG)
 
+    write(*,*) "Hello"
   end subroutine getpartparm
 
   subroutine positionchange(sel)
