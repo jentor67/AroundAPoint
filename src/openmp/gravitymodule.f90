@@ -16,62 +16,107 @@ module gravitymodule
 
 
 contains
-  !  ##### NOT USED ##########
+
+  ! ### check if there is a collision ###
   subroutine collisionTest(sel, iteration)
     ! only works for 2 body collisions
     integer :: n_primary, n_test, iteration
 
-    real(dp) :: dist_two_objects, p1(3), p2(3), vel1(3), vel2(3), m1, m2
+    real(dp) :: dist_two_objects, two_object_radius, rdot
+    real(dp) :: p1(3), p2(3), vel1(3), vel2(3), m1, m2
     
     type(particle) sel(:)
 
 
     do n_primary = 1, size(sel)
 
-      do n_test = n_primary+1, size(sel)
-
-        if( size(sel) == 2  .and. n_test ==2 .and. n_primary == 1) then
-           dist_two_objects = distance( sel(n_primary), sel(n_test) )
-
-           if( dist_two_objects < min_radius ) then
-             write(*,*) "min_dist", iteration, dist_two_objects
-             min_radius = dist_two_objects
-           end if
-
-        end if
-
-        if( n_primary /= n_test .and. &
-              sel(n_primary)%mass > 0.0 .and. &
-              sel(n_test)%mass > 0.0 ) then
-
+      do n_test = 1, size(sel)
+        
+        !  ## omits a test for the same element ##
+        if( n_primary /= n_test ) then
+          !  ## determine the distance between to objects ##   
           dist_two_objects = distance( sel(n_primary), sel(n_test) )
 
-          !if( dis1 < (a%radius+b%radius) ) then
-          if( dist_two_objects < &
-                  ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
-            write(*,*) "Collision"
-            
+          ! ## determine the sum of the 2 radiuses ##
+          two_object_radius = sel(n_primary)%radius + sel(n_test)%radius 
+          
+          ! ## test if they collide ##
+          if( dist_two_objects < two_object_radius ) then
+            ! get the relative dot
             p1 = [sel(n_test)%x, sel(n_test)%y, sel(n_test)%z]
             p2 = [sel(n_primary)%x, sel(n_primary)%y, sel(n_primary)%z]
             vel1 = [sel(n_test)%u, sel(n_test)%v, sel(n_test)%w]
             vel2 = [sel(n_primary)%u, sel(n_primary)%v, sel(n_primary)%w]
-            m1 = sel(n_test)%mass 
-            m2 = sel(n_primary)%mass
+
+            ! ## get relative dot ##
+            rdot = relative_dot( p1, vel1, p2, vel2)
+
+            write(*,*) "collision", n_primary, n_test, &
+              dist_two_objects, two_object_radius, iteration, rdot
             
-            call sphere_collision_3d(p1, p2, vel1, vel2, m1, m2)
-            
-            sel(n_test)%u = vel1(1)
-            sel(n_test)%v = vel1(2)
-            sel(n_test)%w = vel1(3)
-            
-            sel(n_primary)%u = vel2(1)
-            sel(n_primary)%v = vel2(2)
-            sel(n_primary)%w = vel2(3)
-           
+            if( rdot < 0 ) then
+              m1 = sel(n_test)%mass 
+              m2 = sel(n_primary)%mass
+
+              call sphere_collision_3d(p1, p2, vel1, vel2, m1, m2)
+
+              sel(n_test)%u = vel1(1)
+              sel(n_test)%v = vel1(2)
+              sel(n_test)%w = vel1(3)
               
-          end if       
+              sel(n_primary)%u = vel2(1)
+              sel(n_primary)%v = vel2(2)
+              sel(n_primary)%w = vel2(3)
+            end if
+          end if
 
         end if
+
+
+!         if( size(sel) == 2  .and. n_test ==2 .and. n_primary == 1) then
+!            dist_two_objects = distance( sel(n_primary), sel(n_test) )
+! 
+!            ! ### resets the min distance ###
+!            if( dist_two_objects < min_radius ) then
+!              write(*,*) "min_dist", iteration, dist_two_objects
+!              min_radius = dist_two_objects
+!            end if
+! 
+!         end if
+
+
+!          if( n_primary /= n_test .and. &
+!                sel(n_primary)%mass > 0.0 .and. &
+!                sel(n_test)%mass > 0.0 ) then
+!  
+!            dist_two_objects = distance( sel(n_primary), sel(n_test) )
+!  
+!            !if( dis1 < (a%radius+b%radius) ) then
+!            if( dist_two_objects < &
+!                    ( sel(n_primary)%radius + sel(n_test)%radius ) ) then
+!              write(*,*) "Collision"
+!              
+!              p1 = [sel(n_test)%x, sel(n_test)%y, sel(n_test)%z]
+!              p2 = [sel(n_primary)%x, sel(n_primary)%y, sel(n_primary)%z]
+!              vel1 = [sel(n_test)%u, sel(n_test)%v, sel(n_test)%w]
+!              vel2 = [sel(n_primary)%u, sel(n_primary)%v, sel(n_primary)%w]
+!              m1 = sel(n_test)%mass 
+!              m2 = sel(n_primary)%mass
+!              
+!              call sphere_collision_3d(p1, p2, vel1, vel2, m1, m2)
+!              
+!              sel(n_test)%u = vel1(1)
+!              sel(n_test)%v = vel1(2)
+!              sel(n_test)%w = vel1(3)
+!              
+!              sel(n_primary)%u = vel2(1)
+!              sel(n_primary)%v = vel2(2)
+!              sel(n_primary)%w = vel2(3)
+!             
+!                
+!            end if       
+
+!        end if
 
       end do
 
@@ -79,6 +124,8 @@ contains
 
   end subroutine collisionTest
   ! ########################################
+  
+ !
 
   subroutine getpartparm(sel, cf)
     type(boundaryconditions) :: cf

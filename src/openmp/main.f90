@@ -162,7 +162,7 @@ Program main
      !  ############################ 
 
      !  test if there are any collisions
-     !call collisionTest( partarray, n ) !bc%Iterations )
+     call collisionTest( partarray, n ) !bc%Iterations )
 
    end do
 

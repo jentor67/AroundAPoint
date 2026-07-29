@@ -3,8 +3,7 @@ module vectormodule
   use constantsmodule
   implicit none
 
-  public rotate2D, unitVector, Vector, magnitude, sphere_collision_3d
-
+  public rotate2D, unitVector, Vector, magnitude, sphere_collision_3d, relative_dot
 
 contains
 
@@ -122,4 +121,30 @@ contains
     
   end subroutine sphere_collision_3d
   ! ##################
+
+  pure function relative_dot(pos1, vel1, pos2, vel2) result(dot)
+    implicit none
+
+    !real, intent(in) :: pos1(3), vel1(3)
+    !real, intent(in) :: pos2(3), vel2(3)
+
+    real(dp), intent(in) :: pos1(3), vel1(3)
+    real(dp), intent(in) :: pos2(3), vel2(3)
+
+    real(dp) :: dot
+    real(dp) :: r(3), v(3)
+
+    ! Relative position
+    r = pos2 - pos1
+
+    ! Relative velocity
+    v = vel2 - vel1
+
+    ! Dot product
+    dot = dot_product(r, v)
+
+  end function relative_dot
+
+
+  
 end module vectormodule

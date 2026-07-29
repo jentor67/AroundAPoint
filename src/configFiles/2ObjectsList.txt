@@ -1,5 +1,5 @@
 Type LIST
-Iterations 100000
+Iterations 1000000
 outputDirectory "/mnt/kdrive/"
 BlenderLimit 2000
 ObjectCount 2
